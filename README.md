@@ -5,21 +5,15 @@ Projeto Final de MO824 - Tópicos em Otimização Combinatória.
 
 **Dependências:**
 
-Antes de executar, é preciso estar em um ambiente Python com os pacotes do `requirements.txt` e o Gurobi instalados. O 
-Gurobi exige uma [licença acadêmica/comercial](https://www.gurobi.com/documentation/9.1/quickstart_linux/obtaining_a_grb_license.html).
-Após obter uma, rode os seguintes comandos:
-
-```
-pip install -r requirements.txt
-python -m pip install -i https://pypi.gurobi.com gurobipy
-```
+Antes de executar, é preciso estar em um ambiente Python com os pacotes do `requirements.txt` e o 
+[Gurobi](https://www.gurobi.com/wp-content/plugins/hd_documentations/documentation/9.1/quickstart_linux.pdf) instalados.
 
 **Como executar:** 
 
-Dentro da pasta `src`, execute o comando:
+Para testar o algoritmo exato, dentro da pasta `src` execute o comando:
 
 ```
-python solve.py --input-file ../instances/tipo_de_inst/nome_da_inst
+python solve_exact.py --input-file ../instances/tipo_de_inst/nome_da_inst --D num_de_bombeiros
 ```
 
 **Grupo:**
