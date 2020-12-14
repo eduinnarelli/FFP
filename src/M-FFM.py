@@ -8,7 +8,8 @@ import networkx as nx
 
 from argparse import ArgumentParser
 from gurobipy import GRB
-
+from FFP import FFP
+from Solution import Solution
 
 def m_ffm(G: nx.Graph, B: list, D: int, T: int):
     '''
@@ -100,31 +101,8 @@ if __name__ == '__main__':
     parser.add_argument('--D', type=int, required=True)
     args = parser.parse_args()
 
-    B = []  # Vértices inicialmente queimados
-    D = args.D  # Número de bombeiros disponíveis
-    G = nx.Graph()  # Grafo de instância
-
-    # Carregar instância
-    with open(args.input_file, 'r') as f:
-
-        # Iterar sobre as linhas do arquivo
-        for (idx, line) in enumerate(f):
-            values = line.split()
-
-            # Adicionar vértices de B
-            if idx > 4 and len(values) == 1:
-                B.append(int(values[0]))
-
-            # Adicionar arestas
-            if len(values) == 2:
-                G.add_edge(int(values[0]), int(values[1]))
-
-    # Número de vértices e arestas
-    n = G.number_of_nodes()
-    m = G.number_of_edges()
-
-    # Limite de iterações
-    T = math.ceil(n / D)
+    ffp = FFP(args.D)
+    ffp.read_input(args.input_file)
 
     # Executar M-FFM
-    m_ffm(G, B, D, T)
+    m_ffm(ffp.G, ffp.B, ffp.D, ffp.T)
