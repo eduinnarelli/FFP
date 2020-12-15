@@ -13,8 +13,10 @@ Universidade Estadual de Campinas - UNICAMP - 2020
 
 Modificado em: 15/12/2020
 '''
+
 import gurobipy as gp
 import networkx as nx
+
 from argparse import ArgumentParser
 from gurobipy import GRB
 from FFP import FFP
@@ -22,7 +24,7 @@ from Solution import Solution
 from math import inf
 
 
-def m_ffm(G: nx.Graph, B: list, D: int, T: int):
+def m_ffm(G: nx.Graph, B: list, D: int, T: int, time: float):
     '''
     Modified Firefighter Model (M-FFM) - modelo de programação linear inteira
     que resolve o FFP de forma exata.
@@ -38,13 +40,9 @@ def m_ffm(G: nx.Graph, B: list, D: int, T: int):
     V = G.nodes
     n = G.number_of_nodes()
 
-    # Inicializar ambiente
-    env = gp.Env(empty=True)
-    env.setParam('TimeLimit', 1800)
-    env.start()
-
     # Inicializar modelo
-    model = gp.Model('ffm', env=env)
+    model = gp.Model('ffm')
+    model.setParam('TimeLimit', time)
 
     # Variáveis binárias:
     # - b[v, t]: indica se o vértice v está queimado (1) ou não (0) no inst. t
@@ -100,6 +98,7 @@ def m_ffm(G: nx.Graph, B: list, D: int, T: int):
         for t in range(1, min([nx.shortest_path_length(G, v, b) for b in B]))
     ))
     
+    # Colocando variáveis no modelo.
     model._b = b
     model._d = d
 
@@ -108,11 +107,9 @@ def m_ffm(G: nx.Graph, B: list, D: int, T: int):
 
 
 def vars_to_solution(model, problem):
-    b = model._b
-    d = model._d
+    b, d = model._b, model._d
     
-    defended = set()
-    burned = set()
+    defended, burned = set(), set()
 
     n = problem.G.number_of_nodes()
     iteration = [inf for i in range(n)]
@@ -147,7 +144,7 @@ if __name__ == '__main__':
     ffp.read_input(args.input_file)
 
     # Executar M-FFM
-    m = m_ffm(ffp.G, ffp.B, ffp.D, ffp.T)
+    m = m_ffm(ffp.G, ffp.B, ffp.D, ffp.T, 1800)
     m.optimize()
     sol = vars_to_solution(m, ffp)
     print(sol)
