@@ -31,10 +31,10 @@ class Solution(object):
     def full_solution(self):
         defended = [(x, self.iterations[x]) for x in self.defended]
         burned = [(x, self.iterations[x]) for x in self.burned]
-
         return defended, burned
 
     def __repr__(self):
-        defended = [(x, self.iterations[x]) for x in self.defended]
-        burned = [(x, self.iterations[x]) for x in self.burned]
-        return f"SOLUTION\nCost: {self.cost}\nDefended vertices: {defended}\n Burned vertices: {burned}"
+        defended,burned = self.full_solution()
+        return (f"SOLUTION\nCost: {self.cost}\n"
+                f"Defended vertices: {defended}\n"
+                f"Burned vertices: {burned}")

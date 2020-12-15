@@ -99,15 +99,18 @@ def m_ffm(G: nx.Graph, B: list, D: int, T: int):
         for v in set(V).difference(set(B))
         for t in range(1, min([nx.shortest_path_length(G, v, b) for b in B]))
     ))
+    
+    model._b = b
+    model._d = d
 
     # Retornar modelo
     return model
 
 
 def vars_to_solution(model, problem):
-    b = model.getVarByName("b")
-    d = model.getVarByName("d")
-
+    b = model._b
+    d = model._d
+    
     defended = set()
     burned = set()
 
@@ -120,16 +123,16 @@ def vars_to_solution(model, problem):
 
             # Quando um nó é queimado ou defendido,
             # guarda a iteração e vai para o próximo.
-            if b[v, t] == 1:
+            if b[v, t].X == 1.0:
                 burned.add(v)
                 iteration[v] = t
                 break
-            elif d[v, t] == 1:
+            elif d[v, t].X == 1.0:
                 defended.add(v)
                 iteration[v] = t
                 break
 
-    return Solution(defended, burned, iteration, model.cost)
+    return Solution(defended, burned, iteration, model.objVal)
 
 
 if __name__ == '__main__':
@@ -146,5 +149,5 @@ if __name__ == '__main__':
     # Executar M-FFM
     m = m_ffm(ffp.G, ffp.B, ffp.D, ffp.T)
     m.optimize()
-    # sol = vars_to_solution(m, ffp)
-    # print(sol)
+    sol = vars_to_solution(m, ffp)
+    print(sol)
