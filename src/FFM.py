@@ -106,5 +106,5 @@ if __name__ == '__main__':
     # Executar M-FFM
     m = ffm(ffp.G, ffp.B, ffp.D, ffp.T, 1800)
     m.optimize()
-    sol = ffp.vars_to_solution(m)
+    sol = Solution.vars_to_solution(m, ffp)
     print(sol)
