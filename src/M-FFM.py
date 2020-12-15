@@ -13,19 +13,14 @@ Universidade Estadual de Campinas - UNICAMP - 2020
 
 Modificado em: 15/12/2020
 '''
-
-'''
-Nesse módulo constam uma função que modela e resolve o FFP e um script que
-chama a função.
-'''
 import gurobipy as gp
 import networkx as nx
-
 from argparse import ArgumentParser
 from gurobipy import GRB
 from FFP import FFP
 from Solution import Solution
 from math import inf
+
 
 def m_ffm(G: nx.Graph, B: list, D: int, T: int):
     '''
@@ -115,27 +110,27 @@ def vars_to_solution(model, problem):
 
     defended = set()
     burned = set()
-    
-    n = self.G.number_of_nodes()
+
+    n = problem.G.number_of_nodes()
     iteration = [inf for i in range(n)]
-    
+
     # Converter variáveis para conjuntos/listas
     for v in range(n):
-        for t in range(T):
-            
+        for t in range(problem.T):
+
             # Quando um nó é queimado ou defendido,
             # guarda a iteração e vai para o próximo.
-            if b[v,t] == 1: 
+            if b[v, t] == 1:
                 burned.add(v)
                 iteration[v] = t
                 break
-            elif d[v,t] == 1:
+            elif d[v, t] == 1:
                 defended.add(v)
                 iteration[v] = t
                 break
-    
+
     return Solution(defended, burned, iteration, model.cost)
-    
+
 
 if __name__ == '__main__':
 
@@ -147,10 +142,9 @@ if __name__ == '__main__':
 
     ffp = FFP(args.D)
     ffp.read_input(args.input_file)
-    print(ffp)
 
     # Executar M-FFM
     m = m_ffm(ffp.G, ffp.B, ffp.D, ffp.T)
-    #m.optimize()
-    sol = vars_to_solution(m, ffp)
-    print(sol)
+    m.optimize()
+    # sol = vars_to_solution(m, ffp)
+    # print(sol)

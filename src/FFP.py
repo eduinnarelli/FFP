@@ -17,16 +17,17 @@ Modificado em: 15/12/2020
 from networkx import Graph
 from math import ceil
 
+
 class FFP(object):
-    def __init__(self, D: int, G: Graph=Graph(), B: list=[], T: int=0):
+    def __init__(self, D: int, G: Graph = Graph(), B: list = [], T: int = 0):
         # Parâmetro obrigatório
         self.D = D
-        
+
         # Parâmetros opcionais.
         self.G = G
         self.B = B
         self.T = T
-    
+
     def read_input(self, filename):
         # Carregar instância
         with open(filename, 'r') as f:
@@ -48,6 +49,8 @@ class FFP(object):
 
         # Limite de iterações
         self.T = ceil(n / self.D)
-    
+
     def __repr__(self):
-        return f"FFP\nFirefighters: {self.D}, Iterations: {self.T}\nInitial burned nodes: {self.B}\nGraph: {self.G}"
+        return (f"FFP\nFirefighters: {self.D}, Iterations: {self.T}\nInitial "
+                f"burned nodes: {self.B}\nNodes: {self.G.nodes}"
+                f"\nEdges: {self.G.edges}")
