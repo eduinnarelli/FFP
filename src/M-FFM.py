@@ -25,6 +25,7 @@ from argparse import ArgumentParser
 from gurobipy import GRB
 from FFP import FFP
 from Solution import Solution
+from math import inf
 
 def m_ffm(G: nx.Graph, B: list, D: int, T: int):
     '''
@@ -104,12 +105,36 @@ def m_ffm(G: nx.Graph, B: list, D: int, T: int):
         for t in range(1, min([nx.shortest_path_length(G, v, b) for b in B]))
     ))
 
-    # Otimizar modelo
+    # Retornar modelo
     return model
 
 
 def vars_to_solution(model, problem):
-    return None
+    b = model.getVarByName("b")
+    d = model.getVarByName("d")
+
+    defended = set()
+    burned = set()
+    
+    n = self.G.number_of_nodes()
+    iteration = [inf for i in range(n)]
+    
+    # Converter variáveis para conjuntos/listas
+    for v in range(n):
+        for t in range(T):
+            
+            # Quando um nó é queimado ou defendido,
+            # guarda a iteração e vai para o próximo.
+            if b[v,t] == 1: 
+                burned.add(v)
+                iteration[v] = t
+                break
+            elif d[v,t] == 1:
+                defended.add(v)
+                iteration[v] = t
+                break
+    
+    return Solution(defended, burned, iteration, model.cost)
     
 
 if __name__ == '__main__':
