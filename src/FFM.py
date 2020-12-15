@@ -1,7 +1,7 @@
 '''
 Projeto Final: Mateurística para o Problema dos Brigadistas.
 
-M-FFM.py: Modelo linear inteiro relaxado para o problema dos brigadistas.
+FFM.py: Modelo linear inteiro para o problema dos brigadistas.
 
 Disciplina:
     MC859/MO824 - Pesquisa Operacional.
@@ -22,9 +22,9 @@ from gurobipy import GRB
 from FFP import FFP
 from Solution import Solution
 
-def m_ffm(G: nx.Graph, B: list, D: int, T: int, time: float):
+def ffm(G: nx.Graph, B: list, D: int, T: int, time: float):
     '''
-    Modified Firefighter Model (M-FFM) - modelo de programação linear inteira
+    Firefighter Model (FFM) - modelo de programação linear inteira
     que resolve o FFP de forma exata.
 
         Args:
@@ -39,7 +39,7 @@ def m_ffm(G: nx.Graph, B: list, D: int, T: int, time: float):
     n = G.number_of_nodes()
 
     # Inicializar modelo
-    model = gp.Model('m-ffm')
+    model = gp.Model('ffm')
     model.setParam('TimeLimit', time)
 
     # Variáveis binárias:
@@ -76,25 +76,14 @@ def m_ffm(G: nx.Graph, B: list, D: int, T: int, time: float):
         d[v, t] - d[v, t-1] >= 0 for v in V for t in range(1, T+1)
     ))
 
-    # - limitar o número de vértices defendidos em t por t*D. Essa restrição é
-    #   relaxada da original e permite a alocação de bombeiros adicionais, mas
-    #   isso não impacta no custo e é possível viabilizar a solução em tempo
-    #   polinomial;
-    model.addConstrs((d.sum('*', t) <= t*D for t in range(1, T+1)))
+    # - limite de vértices defendidos por iteração;
+    model.addConstrs((gp.quicksum(d[v,t] - d[v,t-1] for v in V) <= D for t in range(1, T+1)))
 
     # - inicializar variáveis no instante 0 (vértices de B queimados e nenhum
     #   defendido);
     model.addConstrs((b[v, 0] == 1 for v in B))
     model.addConstrs((b[v, 0] == 0 for v in set(V).difference(set(B))))
     model.addConstrs((d[v, 0] == 0 for v in V))
-
-    # - um vértice v só pode ser queimado a partir do instante t >= d(v, B),
-    #   onde d(v, B) representa o menor caminho entre v e o conjunto B.
-    model.addConstrs((
-        b[v, t] == 0
-        for v in set(V).difference(set(B))
-        for t in range(1, min([nx.shortest_path_length(G, v, b) for b in B]))
-    ))
     
     # Colocando variáveis no modelo.
     model._b = b
@@ -115,7 +104,7 @@ if __name__ == '__main__':
     ffp.read_input(args.input_file)
 
     # Executar M-FFM
-    m = m_ffm(ffp.G, ffp.B, ffp.D, ffp.T, 1800)
+    m = ffm(ffp.G, ffp.B, ffp.D, ffp.T, 1800)
     m.optimize()
     sol = ffp.vars_to_solution(m)
     print(sol)

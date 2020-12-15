@@ -16,7 +16,6 @@ Modificado em: 15/12/2020
 
 from networkx import Graph
 
-
 class Solution(object):
     def __init__(self, defended: set, burned: set, iterations: list,
                  cost: int = 0):
@@ -26,7 +25,7 @@ class Solution(object):
         self.cost = cost
 
     def calculate_cost(self, G: Graph):
-        self.cost = set(G.nodes).difference(self.burned)
+        self.cost = len(set(G.nodes).difference(self.burned))
 
     def full_solution(self):
         defended = [(x, self.iterations[x]) for x in self.defended]

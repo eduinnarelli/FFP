@@ -15,8 +15,7 @@ Modificado em: 15/12/2020
 '''
 
 from networkx import Graph
-from math import ceil
-
+from math import ceil, inf
 
 class FFP(object):
     def __init__(self, D: int, G: Graph = Graph(), B: list = [], T: int = 0):
@@ -29,7 +28,8 @@ class FFP(object):
         self.T = T
 
     def read_input(self, filename):
-        # Carregar instância
+        ''' Função para carregar uma instância.'''
+        
         with open(filename, 'r') as f:
 
             # Iterar sobre as linhas do arquivo
@@ -49,6 +49,31 @@ class FFP(object):
 
         # Limite de iterações
         self.T = ceil(n / self.D)
+    
+    def vars_to_solution(self, model):
+        ''' Função para traduzir variáveis do Gurobi para Solution.'''
+        b, d = model._b, model._d
+        defended, burned = set(), set()
+
+        n = self.G.number_of_nodes()
+        iteration = [inf for i in range(n)]
+
+        # Converter variáveis para conjuntos/listas
+        for v in range(n):
+            for t in range(self.T+1):
+
+                # Quando um nó é queimado ou defendido,
+                # guarda a iteração e vai para o próximo.
+                if b[v, t].X == 1.0:
+                    burned.add(v)
+                    iteration[v] = t
+                    break
+                elif d[v, t].X == 1.0:
+                    defended.add(v)
+                    iteration[v] = t
+                    break
+
+        return Solution(defended, burned, iteration, model.objVal)
 
     def __repr__(self):
         return (f"FFP\nFirefighters: {self.D}, Iterations: {self.T}\nInitial "
