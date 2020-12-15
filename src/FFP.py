@@ -76,6 +76,8 @@ class FFP(object):
         return Solution(defended, burned, iteration, model.objVal)
 
     def __repr__(self):
-        return (f"FFP\nFirefighters: {self.D}, Iterations: {self.T}\nInitial "
-                f"burned nodes: {self.B}\nNodes: {self.G.nodes}"
-                f"\nEdges: {self.G.edges}")
+        return (f"FFP\n"
+                f"Firefighters: {self.D}, Iterations: {self.T}\n"
+                f"Initial Burned Nodes: {self.B}\n"
+                f"Nodes: {self.G.nodes}\n"
+                f"Edges: {self.G.edges}")

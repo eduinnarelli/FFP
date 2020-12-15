@@ -34,6 +34,7 @@ class Solution(object):
 
     def __repr__(self):
         defended,burned = self.full_solution()
-        return (f"SOLUTION\nCost: {self.cost}\n"
+        return (f"SOLUTION\n"
+                f"Cost: {self.cost}\n"
                 f"Defended vertices: {defended}\n"
                 f"Burned vertices: {burned}")
