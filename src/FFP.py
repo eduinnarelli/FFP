@@ -48,3 +48,6 @@ class FFP(object):
 
         # Limite de iterações
         self.T = ceil(n / self.D)
+    
+    def __repr__(self):
+        return f"FFP\nFirefighters: {self.D}, Iterations: {self.T}\nInitial burned nodes: {self.B}\nGraph: {self.G}"

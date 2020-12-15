@@ -26,3 +26,14 @@ class Solution(object):
     
     def calculate_cost(self, G: Graph):
         self.cost = set(G.nodes).difference(self.burned)
+    
+    def full_solution(self):
+        defended = [(x,iterations[x]) for x in self.defended]
+        burned = [(x,iterations[x]) for x in self.burned]
+        
+        return defended, burned
+    
+    def __repr__(self):
+        defended = [(x,iterations[x]) for x in self.defended]
+        burned = [(x,iterations[x]) for x in self.burned]
+        return f"SOLUTION\nCost: {self.cost}\nDefended vertices: {defended}\n Burned vertices: {burned}"

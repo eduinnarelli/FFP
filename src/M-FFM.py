@@ -1,8 +1,23 @@
 '''
+Projeto Final: Mateurística para o Problema dos Brigadistas.
+
+M-FFM.py: Modelo linear inteiro relaxado para o problema dos brigadistas.
+
+Disciplina:
+    MC859/MO824 - Pesquisa Operacional.
+Autores:
+    Eduardo Barros Innarelli - RA 170161
+    Victor Ferreira Ferrari  - RA 187890
+
+Universidade Estadual de Campinas - UNICAMP - 2020
+
+Modificado em: 15/12/2020
+'''
+
+'''
 Nesse módulo constam uma função que modela e resolve o FFP e um script que
 chama a função.
 '''
-import math
 import gurobipy as gp
 import networkx as nx
 
@@ -37,9 +52,9 @@ def m_ffm(G: nx.Graph, B: list, D: int, T: int):
 
     # Variáveis binárias:
     # - b[v, t]: indica se o vértice v está queimado (1) ou não (0) no inst. t
-    b = model.addVars(n, T, vtype=GRB.BINARY)
+    b = model.addVars(n, T, vtype=GRB.BINARY, name="b")
     # - d[v, t]: indica se o vértice v está salvo (1) ou não (0) no instante t
-    d = model.addVars(n, T, vtype=GRB.BINARY)
+    d = model.addVars(n, T, vtype=GRB.BINARY, name="d")
 
     # Objetivo: minimizar quantidade de vértices queimados no instante T
     model.setObjective(gp.quicksum(b[v, T-1] for v in V))
@@ -90,8 +105,12 @@ def m_ffm(G: nx.Graph, B: list, D: int, T: int):
     ))
 
     # Otimizar modelo
-    model.optimize()
+    return model
 
+
+def vars_to_solution(model, problem):
+    return None
+    
 
 if __name__ == '__main__':
 
@@ -103,6 +122,10 @@ if __name__ == '__main__':
 
     ffp = FFP(args.D)
     ffp.read_input(args.input_file)
+    print(ffp)
 
     # Executar M-FFM
-    m_ffm(ffp.G, ffp.B, ffp.D, ffp.T)
+    m = m_ffm(ffp.G, ffp.B, ffp.D, ffp.T)
+    #m.optimize()
+    sol = vars_to_solution(m, ffp)
+    print(sol)
