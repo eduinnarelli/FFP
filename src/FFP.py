@@ -11,7 +11,7 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 15/12/2020
+Modificado em: 17/12/2020
 '''
 
 from networkx import Graph
@@ -27,7 +27,7 @@ class FFP(object):
         self.B = B
         self.T = T
 
-    def read_input(self, filename):
+    def read_input(self, filename: str):
         ''' Função para carregar uma instância.'''
         
         with open(filename, 'r') as f:
@@ -49,6 +49,14 @@ class FFP(object):
 
         # Limite de iterações
         self.T = ceil(n / self.D)
+    
+    def local_search(self, solution: Solution, k: int, sigma: float,
+                     f: str, time_limit: float):
+        raise NotImplementedError
+        neigh = solution.construct_neighborhood(k, sigma, self.G, f)
+        N = set(self.G.nodes).difference(neigh.union(solution.defended))
+        # Fixar variáveis d_vt para v \in N e 0 <= t <= T
+        # Resolver M-FFM e retornar solução.
 
     def __repr__(self):
         return (f"FFP\n"
