@@ -22,12 +22,18 @@ from types import FunctionType
 
 class NatGRASP(object):
     def __init__(self, k: int, f: FunctionType, eps: float, 
-                time_limit: float, start_time: float):
+                 time_limit: float, start_time: float):
         self.k = k
         self.f = f
         self.eps = eps
         self.limit = time_limit
         self.start_time = start_time
+    
+    def constructive_heuristic(self, problem: FFP, alpha: float):
+        raise NotImplementedError
+    
+    def pool_selection(self, S: set, rho: int):
+        raise NotImplementedError
         
     def neighborhood_update(self, sigma: float, solution: Solution):
         return min(1, sigma+0.1) if solution.optimal else max(0, sigma-0.1)
@@ -73,3 +79,43 @@ class NatGRASP(object):
         
         # TODO: intensificação
         return inc_sol
+
+
+if __name__ == "__main__":
+    # Argumentos da linha de comando
+    parser = ArgumentParser(add_help=False)
+    parser.add_argument('--input-file', type=str, required=True)
+    parser.add_argument('--D', type=int, required=True)
+    args = parser.parse_args()
+
+    ffp = FFP(args.D)
+    ffp.read_input(args.input_file)
+    
+    # Parâmetros
+    k = 2
+    f = None
+    eps = 0.5
+    limit = 1800
+    alpha = 0.3
+    eta = 11000
+    rho = 4
+    
+    start_time = time()
+    method = NatGRASP(k, f, eps, limit, start_time)
+    
+    # Passo 1: Construção
+    S = set()
+    best = method.constructive_heuristic(ffp, alpha)
+    S.add(best)
+    for i in range(eta-1):
+        curr = method.constructive_heuristic(ffp, alpha)
+        best = curr if curr.cost > best.cost else best
+        S.add(curr)
+    
+    # Passo 2: Seleção
+    P = method.pool_selection(S, rho)
+    
+    # Passo 3: Busca Local
+    best = method.adaptive_local_search(ffp, P, best, time()-start_time)
+    
+    print(best)
