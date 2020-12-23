@@ -11,7 +11,7 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 17/12/2020
+Modificado em: 23/12/2020
 '''
 
 from Solution import Solution
@@ -62,10 +62,14 @@ class NatGRASP(object):
         # Explorar pool de soluções (exceto a melhor)
         for s in pool:
             sol_time = (self.limit - time - local_time)/rho
+            
+            # Busca local com T iterações
             problem.T = ceil((1+self.eps)*s.T)
             curr_sol = problem.local_search(s, self.k, sigma, self.f,
                                             sol_time)
             inc_sol = curr_sol if curr_sol.cost > inc_sol.cost else inc_sol
+            
+            # Atualizar sigma e outros parâmetros
             sigma = neighborhood_update(sigma, curr_sol)
             rho = rho - 1
             time = time() - self.start_time
@@ -77,9 +81,50 @@ class NatGRASP(object):
         inc_sol = curr_sol if curr_sol.cost > inc_sol.cost else inc_sol
         time = time() - self.start_time
         
-        # TODO: intensificação
-        return inc_sol
+        return self.instensification(problem, sigma, inc_sol)
 
+    def intensification(self, problem: FFP, sigma: float,
+                        best_sol: Solution, time: float):
+        
+        # Iniciar parâmetros
+        prev_sol = best_sol
+        gamma = False
+        prev_sig = sigma
+        
+        # Consecutivas buscas locais na melhor solução.
+        while(time < self.limit):
+            N_prev = prev_sol.construct_neighborhood(self.k, prev_sig, 
+                                                     problem.G, self.f)
+                                                     
+            # Busca local com T iterações
+            problem.T = ceil((1+self.eps)*prev_sol.T)
+            curr_sol = problem.local_search(prev_sol, self.k, prev_sig,
+                                            self.f, self.limit - time)
+            best_sol = curr_sol if curr_sol.cost > best_sol.cost else best_sol
+            
+            # Atualizar sigma
+            sigma = neighborhood_update(sigma, curr_sol)            
+            
+            # Verificar critérios de parada: convergência e segundo reinício.
+            N_curr = curr_sol.construct_neighborhood(self.k, sigma, 
+                                                     problem.G, self.f)
+                                                     
+            if N_prev.symmetric_difference(N_curr) == 0 or 
+               (sigma == sig_prev and gamma): 
+               break;
+            
+            # Reinício.
+            if sigma == sig_prev and not gamma: 
+                sigma = 0.5
+                gamma = True
+        
+            # Atualizar parâmetros
+            prev_sol = curr_sol
+            prev_sig = sigma
+            time = time() - self.start_time
+
+        return best_Sol
+        
 
 if __name__ == "__main__":
     # Argumentos da linha de comando
