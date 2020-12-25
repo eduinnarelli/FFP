@@ -11,7 +11,7 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 23/12/2020
+Modificado em: 24/12/2020
 '''
 
 from Solution import Solution
@@ -33,7 +33,42 @@ class NatGRASP(object):
         raise NotImplementedError
     
     def pool_selection(self, S: set, rho: int):
-        raise NotImplementedError
+        lS = list(S).sort(key=lambda i: i.cost)
+        best = lS[-1]
+        q0   = lS[0].cost
+        q4   = best.cost
+        
+        # TODO: não sei se está certo.
+        # Separar conjuntos Si
+        diff = (q4 - q0)/4
+        q = list(range(q0+diff, q4+1, step=diff))
+        Si = [[]*4]
+        i = 0
+        
+        for j in lS:
+            if (j.cost >= q[i]): i += 1
+            Si[i].append(j)
+        
+        # Pseudocodigo começa aqui
+        # IDEIA: calcular k-vizinhança de todos os elementos de S?
+        pool = set([best])
+        best_neigh = best.construct_neighborhood(self.k, 1.0, problem.G
+                                                 self.f)
+        for i in range(4):
+            for s in Si[i]:
+                if len(pool) < rho: 
+                    pool.add(s)
+                else:
+                    # TODO: pegar solução do pool com menor diferença simétrica da k vizinhança com best
+                    # TODO: ver se s ou essa solução do pool é mais diverso. Stub:
+                    if n_s.symmetric_difference(n_best) > 
+                       n_old_s.symmetric_difference(n_best):
+                        pool.remove(old_s)
+                        pool.add(s)
+                    
+            if len(pool) == rho: break
+            
+        return pool
         
     def neighborhood_update(self, sigma: float, solution: Solution):
         return min(1, sigma+0.1) if solution.optimal else max(0, sigma-0.1)
