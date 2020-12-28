@@ -22,6 +22,7 @@ from gurobipy import GRB
 from FFP import FFP
 from Solution import Solution
 
+
 def ffm(G: nx.Graph, B: list, D: int, T: int, time: float):
     '''
     Firefighter Model (FFM) - modelo de programação linear inteira
@@ -77,20 +78,22 @@ def ffm(G: nx.Graph, B: list, D: int, T: int, time: float):
     ))
 
     # - limite de vértices defendidos por iteração;
-    model.addConstrs((gp.quicksum(d[v,t] - d[v,t-1] for v in V) <= D for t in range(1, T+1)))
+    model.addConstrs((gp.quicksum(d[v, t] - d[v, t-1]
+                                  for v in V) <= D for t in range(1, T+1)))
 
     # - inicializar variáveis no instante 0 (vértices de B queimados e nenhum
     #   defendido);
     model.addConstrs((b[v, 0] == 1 for v in B))
     model.addConstrs((b[v, 0] == 0 for v in set(V).difference(set(B))))
     model.addConstrs((d[v, 0] == 0 for v in V))
-    
+
     # Colocando variáveis no modelo.
     model._b = b
     model._d = d
 
     # Retornar modelo
     return model
+
 
 if __name__ == '__main__':
 

@@ -22,6 +22,7 @@ from gurobipy import GRB
 from FFP import FFP
 from Solution import Solution
 
+
 def m_ffm(G: nx.Graph, B: list, D: int, T: int, time: float):
     '''
     Modified Firefighter Model (M-FFM) - modelo de programação linear inteira
@@ -95,13 +96,14 @@ def m_ffm(G: nx.Graph, B: list, D: int, T: int, time: float):
         for v in set(V).difference(set(B))
         for t in range(1, min([nx.shortest_path_length(G, v, b) for b in B]))
     ))
-    
+
     # Colocando variáveis no modelo.
     model._b = b
     model._d = d
 
     # Retornar modelo
     return model
+
 
 if __name__ == '__main__':
 
