@@ -11,7 +11,7 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 24/12/2020
+Modificado em: 29/12/2020
 '''
 
 from argparse import ArgumentParser
@@ -73,7 +73,7 @@ class NatGRASP(object):
             for b in burned:
                 th.update([
                     v_n for v_n in G.adj[b]
-                    if v_n not in defended and v_n not in burned
+                    if v_n not in defended.union(burned)
                 ])
 
             # Se não houver vértices ameaçados, todos estão queimados,
@@ -130,7 +130,7 @@ class NatGRASP(object):
         # Pseudocodigo começa aqui
         # IDEIA: calcular k-vizinhança de todos os elementos de S?
         pool = set([best])
-        best_neigh = best.construct_neighborhood(self.k, 1.0, self.problem.G,
+        best_neigh = best.construct_neighborhood(self.k, 1.0, self.ffp.G,
                                                  self.f)
         for i in range(4):
             for s in Si[i]:
@@ -265,13 +265,12 @@ if __name__ == "__main__":
     method = NatGRASP(ffp, k, f, eps, limit, start_time)
 
     # PASSO 1: Construção
-
     S = set()
     best = method.constructive_heuristic_th(alpha)
     S.add(best)
 
     # Critério de parada 1: eta iterações
-    for i in range(eta-1):
+    for i in range(eta):
 
         # Critério de parada 2: metade do limite de tempo alcançado
         if time() - method.start_time >= method.limit / 2:
