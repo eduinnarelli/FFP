@@ -11,7 +11,7 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 29/12/2020
+Modificado em: 31/12/2020
 '''
 
 from argparse import ArgumentParser
@@ -22,6 +22,7 @@ from types import FunctionType
 
 from Solution import Solution
 from FFP import FFP
+from desc import num_of_descendants
 
 
 class NatGRASP(object):
@@ -42,7 +43,7 @@ class NatGRASP(object):
 
             Args:
                 alpha (float): parâmetro alpha do GRASP, que rege o quão guloso
-                    ou aleatório é a heurística.
+                    ou aleatória é a heurística.
             Returns:
                 A solução com os vértices defendidos, queimados e o custo.
         '''
@@ -253,7 +254,7 @@ if __name__ == "__main__":
 
     # Parâmetros
     k = 2
-    f = None
+    f = num_of_descendants
     eps = 0.5
     limit = ffp.G.number_of_nodes() / 2
     alpha = 0.3
@@ -270,7 +271,7 @@ if __name__ == "__main__":
     S.add(best)
 
     # Critério de parada 1: eta iterações
-    for i in range(eta):
+    for _ in range(eta - 1):
 
         # Critério de parada 2: metade do limite de tempo alcançado
         if time() - method.start_time >= method.limit / 2:
@@ -280,7 +281,9 @@ if __name__ == "__main__":
         best = curr if curr.cost > best.cost else best
         S.add(curr)
 
-    print(best)
+    print(f'{best}\n'
+          f'Construct neighbour test: '
+          f'{best.construct_neighborhood(k, 0.5, ffp.G, f)}')
 
     # # Passo 2: Seleção
     # P = method.pool_selection(S, rho)
