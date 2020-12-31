@@ -14,11 +14,12 @@ Universidade Estadual de Campinas - UNICAMP - 2020
 Modificado em: 17/12/2020
 '''
 
-from networkx import Graph
-from math import inf
+from networkx import Graph, single_source_shortest_path
+from math import ceil, inf
 from types import FunctionType
 from gurobipy import Model, GRB
 from FFP import FFP
+
 
 class Solution(object):
     def __init__(self, defended: set, burned: set, iterations: list,
@@ -32,13 +33,36 @@ class Solution(object):
 
     def calculate_cost(self, G: Graph):
         self.cost = len(set(G.nodes).difference(self.burned))
-    
+
     def construct_neighborhood(self, k: int, sigma: float, G: Graph,
                                f: FunctionType):
-        # Achar k-vizinhança dos vértices defendidos
-        # Mapear função f em todos os vértices para conseguir valor.
-        # Pegar os sigma melhores vértices.
-        raise NotImplementedError
+        '''
+        Função que constrói vizinhança dos vértices defendidos na solução,
+        filtrando do conjunto de todas k-vizinhanças a fração sigma de melhores
+        vizinhos de acordo com um critério guloso regido pela função f.
+        '''
+
+        # Conjunto de todas as k-vizinhanças
+        kn = set()
+
+        for d in self.defended:
+
+            kn.update(
+                # Menores caminhos de profundidade k (as chaves retornam os
+                # destinos)
+                v_n for v_n in list(single_source_shortest_path(G, d, k).
+                                    keys())
+                # Ignorar vértices queimados ou defendidos
+                if v_n not in self.defended.union(self.burned)
+            )
+
+        # Ordenar k-vizinhanças em ordem descrescente usando função f
+        kn_sorted = sorted(list(kn),
+                           key=lambda v: f(self, G, v),
+                           reverse=True)
+
+        # Retornar a fração sigma de melhores vizinhos
+        return kn_sorted[:ceil(sigma * len(kn_sorted))]
 
     def full_solution(self):
         defended = [(x, self.iterations[x]) for x in self.defended]
@@ -46,14 +70,13 @@ class Solution(object):
         return defended, burned
 
     def __repr__(self):
-        defended,burned = self.full_solution()
+        defended, burned = self.full_solution()
         return (f"SOLUTION\n"
                 f"Cost: {self.cost}\n"
                 f"Defended vertices: {defended}\n"
                 f"Burned vertices: {burned}")
 
-
-    @staticmethod
+    @ staticmethod
     def vars_to_solution(model: Model, problem: FFP):
         ''' Função para traduzir variáveis do Gurobi para Solution.'''
         b, d = model._b, model._d
@@ -76,6 +99,7 @@ class Solution(object):
                     defended.add(v)
                     iteration[v] = t
                     break
-                    
+
         optimal = model.status == GRB.Status.OPTIMAL
-        return Solution(defended, burned, iteration, problem.T, model.objVal, optimal)
+        return Solution(defended, burned, iteration, problem.T, model.objVal,
+                        optimal)
