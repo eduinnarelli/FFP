@@ -18,8 +18,6 @@ from networkx import Graph, single_source_shortest_path
 from math import ceil, inf
 from types import FunctionType
 from gurobipy import Model, GRB
-from FFP import FFP
-
 
 class Solution(object):
     def __init__(self, defended: set, burned: set, iterations: list,
@@ -62,7 +60,7 @@ class Solution(object):
                            reverse=True)
 
         # Retornar a fração sigma de melhores vizinhos
-        return kn_sorted[:ceil(sigma * len(kn_sorted))]
+        return set(kn_sorted[:ceil(sigma * len(kn_sorted))])
 
     def full_solution(self):
         defended = [(x, self.iterations[x]) for x in self.defended]
@@ -77,17 +75,17 @@ class Solution(object):
                 f"Burned vertices: {burned}")
 
     @ staticmethod
-    def vars_to_solution(model: Model, problem: FFP):
+    def vars_to_solution(model: Model, G: Graph, T: int):
         ''' Função para traduzir variáveis do Gurobi para Solution.'''
         b, d = model._b, model._d
         defended, burned = set(), set()
 
-        n = problem.G.number_of_nodes()
+        n = G.number_of_nodes()
         iteration = [inf for i in range(n)]
 
         # Converter variáveis para conjuntos/listas
         for v in range(n):
-            for t in range(problem.T+1):
+            for t in range(T+1):
 
                 # Quando um nó é queimado ou defendido,
                 # guarda a iteração e vai para o próximo.
@@ -101,5 +99,5 @@ class Solution(object):
                     break
 
         optimal = model.status == GRB.Status.OPTIMAL
-        return Solution(defended, burned, iteration, problem.T, model.objVal,
+        return Solution(defended, burned, iteration, T, model.objVal,
                         optimal)

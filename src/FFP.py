@@ -17,7 +17,8 @@ Modificado em: 31/12/2020
 from networkx import Graph
 from math import ceil
 
-from M-FFM import m-ffm
+from MFFM import m_ffm
+from Solution import Solution
 
 class FFP(object):
     def __init__(self, D: int, G: Graph = Graph(), B: list = [], T: int = 0):
@@ -54,7 +55,7 @@ class FFP(object):
         self.T = ceil(n / self.D)
     
     def start_model(self):
-        self.model = m-ffm(self.G, self.B, self.D, self.T, 0)
+        self.model = m_ffm(self.G, self.B, self.D, self.T, 0)
         
     def local_search(self, sol: Solution, k: int, sigma: float, f: str, 
                      time_limit: float):
@@ -74,7 +75,6 @@ class FFP(object):
         # Resolver M-FFM e retornar solução.
         self.model.optimize()
         self.model.remove(new_constrs)
-        
         return Solution.vars_to_solution(self.model, self)
 
     def __repr__(self):

@@ -1,7 +1,7 @@
 '''
 Projeto Final: Mateurística para o Problema dos Brigadistas.
 
-M-FFM.py: Modelo linear inteiro relaxado para o problema dos brigadistas.
+MFFM.py: Modelo linear inteiro relaxado para o problema dos brigadistas.
 
 Disciplina:
     MC859/MO824 - Pesquisa Operacional.
@@ -11,7 +11,7 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 15/12/2020
+Modificado em: 31/12/2020
 '''
 
 import gurobipy as gp
@@ -19,9 +19,8 @@ import networkx as nx
 
 from argparse import ArgumentParser
 from gurobipy import GRB
-from FFP import FFP
-from Solution import Solution
-
+#from FFP import FFP
+#from Solution import Solution
 
 def m_ffm(G: nx.Graph, B: list, D: int, T: int, time: float):
     '''
@@ -113,11 +112,11 @@ if __name__ == '__main__':
     parser.add_argument('--D', type=int, required=True)
     args = parser.parse_args()
 
-    ffp = FFP(args.D)
-    ffp.read_input(args.input_file)
+    #ffp = FFP(args.D)
+    #ffp.read_input(args.input_file)
 
     # Executar M-FFM
-    m = m_ffm(ffp.G, ffp.B, ffp.D, ffp.T, 1800)
-    m.optimize()
-    sol = Solution.vars_to_solution(m, ffp)
-    print(sol)
+    #m = m_ffm(ffp.G, ffp.B, ffp.D, ffp.T, 1800)
+    #m.optimize()
+    #sol = Solution.vars_to_solution(m, ffp.G, ffp.T)
+    #print(sol)

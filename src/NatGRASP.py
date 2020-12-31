@@ -264,7 +264,7 @@ if __name__ == "__main__":
     # Instanciar mateurística
     start_time = time()
     method = NatGRASP(ffp, k, f, eps, limit, start_time)
-    method.start_model()
+    ffp.start_model()
 
     # PASSO 1: Construção
     S = set()
