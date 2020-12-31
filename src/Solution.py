@@ -11,7 +11,7 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 17/12/2020
+Modificado em: 31/12/2020
 '''
 
 from networkx import Graph, single_source_shortest_path

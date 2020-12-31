@@ -11,12 +11,13 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 17/12/2020
+Modificado em: 31/12/2020
 '''
 
 from networkx import Graph
 from math import ceil
 
+from M-FFM import m-ffm
 
 class FFP(object):
     def __init__(self, D: int, G: Graph = Graph(), B: list = [], T: int = 0):
@@ -27,6 +28,7 @@ class FFP(object):
         self.G = G
         self.B = B
         self.T = T
+        self.model = None
 
     def read_input(self, filename: str):
         ''' Função para carregar uma instância.'''
@@ -50,14 +52,30 @@ class FFP(object):
 
         # Limite de iterações
         self.T = ceil(n / self.D)
-
-    # def local_search(self, solution: Solution, k: int, sigma: float,
-    #                  f: str, time_limit: float):
-    #     raise NotImplementedError
-    #     neigh = solution.construct_neighborhood(k, sigma, self.G, f)
-    #     N = set(self.G.nodes).difference(neigh.union(solution.defended))
-    #     # Fixar variáveis d_vt para v \in N e 0 <= t <= T
-    #     # Resolver M-FFM e retornar solução.
+    
+    def start_model(self):
+        self.model = m-ffm(self.G, self.B, self.D, self.T, 0)
+        
+    def local_search(self, sol: Solution, k: int, sigma: float, f: str, 
+                     time_limit: float):
+        
+        # Construir grupo de variáveis fixadas.
+        neigh = solution.construct_neighborhood(k, sigma, self.G, f)
+        N = set(self.G.nodes).difference(neigh.union(solution.defended))
+        
+        # Fixar variáveis d_vt para v \in N e 0 <= t <= T
+        d = model._d
+        new_constrs = self.model.addConstrs((
+                        d[v, t] == 0 for v in N for t in range(T+1)
+                      ))
+        self.model.setParam('TimeLimit', time_limit)
+        self.model.update()
+        
+        # Resolver M-FFM e retornar solução.
+        self.model.optimize()
+        self.model.remove(new_constrs)
+        
+        return Solution.vars_to_solution(self.model, self)
 
     def __repr__(self):
         return (f"FFP\n"

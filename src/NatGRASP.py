@@ -131,8 +131,8 @@ class NatGRASP(object):
         # Pseudocodigo começa aqui
         # IDEIA: calcular k-vizinhança de todos os elementos de S?
         pool = set([best])
-        best_neigh = best.construct_neighborhood(self.k, 1.0, self.ffp.G,
-                                                 self.f)
+        n_best = best.construct_neighborhood(self.k, 1.0, self.ffp.G,
+                                             self.f)
         for i in range(4):
             for s in Si[i]:
                 if len(pool) < rho:
@@ -264,6 +264,7 @@ if __name__ == "__main__":
     # Instanciar mateurística
     start_time = time()
     method = NatGRASP(ffp, k, f, eps, limit, start_time)
+    method.start_model()
 
     # PASSO 1: Construção
     S = set()
