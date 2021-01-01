@@ -1,7 +1,7 @@
 '''
 Projeto Final: Mateurística para o Problema dos Brigadistas.
 
-nat_grasp.py: Mateurística baseada no GRASP criada por Natanael Ramos et al.
+NatGRASP.py: Mateurística baseada no GRASP criada por Natanael Ramos et al.
 
 Disciplina:
     MC859/MO824 - Pesquisa Operacional.
