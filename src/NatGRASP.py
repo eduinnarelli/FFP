@@ -11,7 +11,7 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 31/12/2020
+Modificado em: 01/01/2021
 '''
 
 from argparse import ArgumentParser
@@ -111,44 +111,51 @@ class NatGRASP(object):
         return sol
 
     def pool_selection(self, S: set, rho: int):
-        lS = list(S).sort(key=lambda i: i.cost)
-        best = lS[-1]
-        q0 = lS[0].cost
+        S = list(S)
+        S.sort(key=lambda i: i.cost)
+        best = S.pop()
+        q0 = S[0].cost
         q4 = best.cost
 
         # TODO: não sei se está certo.
-        # Separar conjuntos Si
-        diff = (q4 - q0)/4
-        q = list(range(q0+diff, q4+1, step=diff))
-        Si = [[]*4]
+        # Criar quantis q_i
+        diff = (q4 - q0)//4
+        q = list(range(q0+diff, q4+1, diff))
+        Si = [[], [], [], []]
+        
+        # Separar conjuntos Si.
         i = 0
-
-        for j in lS:
-            if (j.cost >= q[i]):
+        for j in S:
+            if (j.cost > q[i]):
                 i += 1
             Si[i].append(j)
 
-        # Pseudocodigo começa aqui
-        # IDEIA: calcular k-vizinhança de todos os elementos de S?
-        pool = set([best])
-        n_best = best.construct_neighborhood(self.k, 1.0, self.ffp.G,
-                                             self.f)
-        for i in range(4):
+        # Iniciar pool e construir vizinhanças para economizar tempo.
+        neigh = lambda s: s.construct_neighborhood(self.k, 1.0, self.ffp.G,
+                                                   self.f) 
+        pool = []
+        n_s = {s:neigh(s) for s in S}
+        n_best = neigh(best)
+            
+        # Pseudocodigo começa aqui:
+        # Para cada Si (ao contrário), adiciona no pool até "rho-1" elementos.
+        # Em seguida, verifica diversidade, substituindo os elementos
+        # menos diversos até acabar o último conjunto. 
+        for i in range(4)[::-1]:
             for s in Si[i]:
-                if len(pool) < rho:
-                    pool.add(s)
+                if len(pool) < rho-1:
+                    pool.append(s)
                 else:
-                    # TODO: pegar solução do pool com menor diferença simétrica da k vizinhança com best
-                    # TODO: ver se s ou essa solução do pool é mais diverso. Stub:
-                    if n_s.symmetric_difference(n_best) > \
-                            n_old_s.symmetric_difference(n_best):
+                    old_s = min(pool, key=lambda x: n_s[x].symmetric_difference(n_best))
+                    if n_s[s].symmetric_difference(n_best) > \
+                            n_s[old_s].symmetric_difference(n_best):
                         pool.remove(old_s)
-                        pool.add(s)
+                        pool.append(s)
 
-            if len(pool) == rho:
+            if len(pool) == rho-1:
                 break
-
-        return pool
+        
+        return pool, best
 
     def neighborhood_update(self, sigma: float, solution: Solution):
         return min(1, sigma+0.1) if solution.optimal else max(0, sigma-0.1)
@@ -169,7 +176,6 @@ class NatGRASP(object):
 
         # Inicializar parâmetros.
         pool.reverse()
-        pool.remove(best_sol)
         inc_sol = best_sol
         sigma, rho = 0.5, len(pool)
         local_time = (self.limit - time)/2
@@ -279,15 +285,14 @@ if __name__ == "__main__":
             break
 
         curr = method.constructive_heuristic_th(alpha)
-        best = curr if curr.cost > best.cost else best
         S.add(curr)
 
-    print(f'{best}\n'
-          f'Construct neighbour test: '
-          f'{best.construct_neighborhood(k, 0.5, ffp.G, f)}')
-
     # # Passo 2: Seleção
-    # P = method.pool_selection(S, rho)
+    P, best = method.pool_selection(S, rho)
+    
+    print("Pool:", P)
+    print("Length:", len(P))
 
     # # Passo 3: Busca Local
     # best = method.adaptive_local_search(ffp, P, best, time()-start_time)
+    # print(best)
