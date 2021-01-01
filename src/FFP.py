@@ -11,7 +11,7 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 31/12/2020
+Modificado em: 01/01/2021
 '''
 
 from networkx import Graph
@@ -59,15 +59,17 @@ class FFP(object):
         
     def local_search(self, sol: Solution, k: int, sigma: float, f: str, 
                      time_limit: float):
+        if (time_limit <= 0): 
+            return sol
         
         # Construir grupo de variáveis fixadas.
-        neigh = solution.construct_neighborhood(k, sigma, self.G, f)
-        N = set(self.G.nodes).difference(neigh.union(solution.defended))
+        neigh = sol.construct_neighborhood(k, sigma, self.G, f)
+        N = set(self.G.nodes).difference(neigh.union(sol.defended))
         
         # Fixar variáveis d_vt para v \in N e 0 <= t <= T
-        d = model._d
+        d = self.model._d
         new_constrs = self.model.addConstrs((
-                        d[v, t] == 0 for v in N for t in range(T+1)
+                        d[v, t] == 0 for v in N for t in range(self.T+1)
                       ))
         self.model.setParam('TimeLimit', time_limit)
         self.model.update()
@@ -75,7 +77,7 @@ class FFP(object):
         # Resolver M-FFM e retornar solução.
         self.model.optimize()
         self.model.remove(new_constrs)
-        return Solution.vars_to_solution(self.model, self)
+        return Solution.vars_to_solution(self.model, self.G, self.T)
 
     def __repr__(self):
         return (f"FFP\n"

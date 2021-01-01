@@ -146,9 +146,9 @@ class NatGRASP(object):
                 if len(pool) < rho-1:
                     pool.append(s)
                 else:
-                    old_s = min(pool, key=lambda x: n_s[x].symmetric_difference(n_best))
-                    if n_s[s].symmetric_difference(n_best) > \
-                            n_s[old_s].symmetric_difference(n_best):
+                    old_s = min(pool, key=lambda x: len(n_s[x].symmetric_difference(n_best)))
+                    if len(n_s[s].symmetric_difference(n_best)) > \
+                            len(n_s[old_s].symmetric_difference(n_best)):
                         pool.remove(old_s)
                         pool.append(s)
 
@@ -161,7 +161,7 @@ class NatGRASP(object):
         return min(1, sigma+0.1) if solution.optimal else max(0, sigma-0.1)
 
     def adaptive_local_search(self, problem: FFP, pool: list,
-                              best_sol: Solution, time: float):
+                              best_sol: Solution, curr_time: float):
         '''
             Função para busca local adaptativa da mateurística baseada no
             GRASP. Faz busca local em todos os elementos de um pool de
@@ -171,18 +171,18 @@ class NatGRASP(object):
                     problem    (FFP): O problema a ser resolvido.
                     pool       (list): o pool de soluções a ser explorado.
                     best_sol   (Solution): melhor solução do pool.
-                    time       (float): duração atual da execução.
+                    curr_time  (float): duração atual da execução.
         '''
 
         # Inicializar parâmetros.
         pool.reverse()
         inc_sol = best_sol
         sigma, rho = 0.5, len(pool)
-        local_time = (self.limit - time)/2
+        local_time = (self.limit - curr_time)/2
 
         # Explorar pool de soluções (exceto a melhor)
         for s in pool:
-            sol_time = (self.limit - time - local_time)/rho
+            sol_time = (self.limit - curr_time - local_time)/rho
 
             # Busca local com T iterações
             problem.T = ceil((1+self.eps)*s.T)
@@ -191,21 +191,33 @@ class NatGRASP(object):
             inc_sol = curr_sol if curr_sol.cost > inc_sol.cost else inc_sol
 
             # Atualizar sigma e outros parâmetros
-            sigma = neighborhood_update(sigma, curr_sol)
+            sigma = self.neighborhood_update(sigma, curr_sol)
             rho = rho - 1
-            time = time() - self.start_time
+            curr_time = time() - self.start_time
 
         # Explorar melhor solução (agora com vizinhança adaptada)
         problem.T = ceil((1+self.eps)*best_sol.T)
         curr_sol = problem.local_search(best_sol, self.k, sigma, self.f,
                                         local_time)
         inc_sol = curr_sol if curr_sol.cost > inc_sol.cost else inc_sol
-        time = time() - self.start_time
+        curr_time = time() - self.start_time
 
-        return self.instensification(problem, sigma, inc_sol)
+        return self.intensification(problem, sigma, inc_sol, curr_time)
 
     def intensification(self, problem: FFP, sigma: float,
-                        best_sol: Solution, time: float):
+                        best_sol: Solution, curr_time: float):
+        '''
+            Função de intensificação de busca da mateurística baseada no
+            GRASP. Realiza uma série de buscas locais em cima da melhor
+            solução, com diferentes valores de "sigma" para busca local.
+            Early stopping em caso de convergência.
+
+                Args:
+                    problem    (FFP): O problema a ser resolvido.
+                    sigma      (float): fração de elementos da vizinhança.
+                    best_sol   (Solution): melhor solução do pool.
+                    curr_time  (float): duração atual da execução.
+        '''
 
         # Iniciar parâmetros
         prev_sol = best_sol
@@ -213,24 +225,24 @@ class NatGRASP(object):
         prev_sig = sigma
 
         # Consecutivas buscas locais na melhor solução.
-        while(time < self.limit):
+        while(curr_time < self.limit):
             N_prev = prev_sol.construct_neighborhood(self.k, prev_sig,
                                                      problem.G, self.f)
 
             # Busca local com T iterações
             problem.T = ceil((1+self.eps)*prev_sol.T)
             curr_sol = problem.local_search(prev_sol, self.k, prev_sig,
-                                            self.f, self.limit - time)
+                                            self.f, self.limit - curr_time)
             best_sol = curr_sol if curr_sol.cost > best_sol.cost else best_sol
 
             # Atualizar sigma
-            sigma = neighborhood_update(sigma, curr_sol)
+            sigma = self.neighborhood_update(sigma, curr_sol)
 
             # Verificar critérios de parada: convergência e segundo reinício.
             N_curr = curr_sol.construct_neighborhood(self.k, sigma,
                                                      problem.G, self.f)
 
-            if N_prev.symmetric_difference(N_curr) == 0 or \
+            if len(N_prev.symmetric_difference(N_curr)) == 0 or \
                     (sigma == sig_prev and gamma):
                 break
 
@@ -242,9 +254,9 @@ class NatGRASP(object):
             # Atualizar parâmetros
             prev_sol = curr_sol
             prev_sig = sigma
-            time = time() - self.start_time
+            curr_time = time() - self.start_time
 
-        return best_Sol
+        return best_sol
 
 
 if __name__ == "__main__":
@@ -274,11 +286,9 @@ if __name__ == "__main__":
 
     # PASSO 1: Construção
     S = set()
-    best = method.constructive_heuristic_th(alpha)
-    S.add(best)
 
     # Critério de parada 1: eta iterações
-    for _ in range(eta - 1):
+    for _ in range(eta):
 
         # Critério de parada 2: metade do limite de tempo alcançado
         if time() - method.start_time >= method.limit / 2:
@@ -287,12 +297,12 @@ if __name__ == "__main__":
         curr = method.constructive_heuristic_th(alpha)
         S.add(curr)
 
-    # # Passo 2: Seleção
+    # Passo 2: Seleção
     P, best = method.pool_selection(S, rho)
     
     print("Pool:", P)
     print("Length:", len(P))
 
-    # # Passo 3: Busca Local
-    # best = method.adaptive_local_search(ffp, P, best, time()-start_time)
-    # print(best)
+    # Passo 3: Busca Local
+    best = method.adaptive_local_search(ffp, P, best, time()-start_time)
+    print(best)
