@@ -17,7 +17,7 @@ Modificado em: 01/01/2021
 from networkx import Graph
 from math import ceil
 
-from MFFM import m_ffm
+from M_FFM import m_ffm
 from Solution import Solution
 
 class FFP(object):

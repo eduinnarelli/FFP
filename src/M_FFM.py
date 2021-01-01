@@ -1,7 +1,7 @@
 '''
 Projeto Final: Mateurística para o Problema dos Brigadistas.
 
-MFFM.py: Modelo linear inteiro relaxado para o problema dos brigadistas.
+M_FFM.py: Modelo linear inteiro relaxado para o problema dos brigadistas.
 
 Disciplina:
     MC859/MO824 - Pesquisa Operacional.
