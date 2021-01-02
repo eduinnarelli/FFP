@@ -29,12 +29,13 @@ class Solution(object):
         self.T = T
         self.cost = cost
         self.optimal = optimal
-        self.neighborhood = list()
+        self.neighborhood = set()
 
     def calculate_cost(self, G: Graph):
         self.cost = len(set(G.nodes).difference(self.burned))
 
-    def construct_neighborhood(self, k: int, G: Graph, f: FunctionType):
+    def construct_neighborhood(self, k: int, sigma: float, G: Graph,
+                               f: FunctionType):
         '''
         Função que constrói vizinhança dos vértices defendidos na solução,
         filtrando do conjunto de todas k-vizinhanças a fração sigma de melhores
@@ -42,6 +43,8 @@ class Solution(object):
 
             Args:
                 k     (int): profundidade da vizinhança.
+                sigma (float): fração dos melhores vizinhos a serem
+                               retornados.
                 G     (Graph): o grafo de entrada.
                 f     (FunctionType): critério guloso para rankear vizinhos.
         '''
@@ -61,16 +64,13 @@ class Solution(object):
             )
 
         # Ordenar k-vizinhanças em ordem descrescente usando função f
-        self.neighborhood = sorted(list(kn),
-                                   key=lambda v: f(self, G, v),
-                                   reverse=True)
+        kn_sorted = sorted(list(kn),
+                           key=lambda v: f(self, G, v),
+                           reverse=True)
 
-    def get_neighborhood_fraction(self, sigma: float):
-        '''
-        Função que retorna fração sigma dos melhores vizinhos ordenados de
-        forma gulosa.
-        '''
-        return self.neighborhood[:ceil(sigma * len(self.neighborhood))]
+        # Armazenar fração sigma dos melhores vizinhos
+        self.neighborhood = set(
+            kn_sorted[:ceil(sigma * len(self.neighborhood))])
 
     def full_solution(self):
         defended = [(x, self.iterations[x]) for x in self.defended]
@@ -83,11 +83,10 @@ class Solution(object):
         simétrica de suas vizinhanças for maior que 0.
         '''
         return isinstance(other, Solution) and \
-            set(self.neighborhood).symmetric_difference(
-                set(other.neighborhood)) > 0
+            self.neighborhood.symmetric_difference(other.neighborhood) > 0
 
     def __hash__(self):
-        return hash(tuple(sorted(self.neighborhood)))
+        return hash(tuple(sorted(tuple(self.neighborhood))))
 
     def __repr__(self):
         defended, burned = self.full_solution()

@@ -240,7 +240,9 @@ class NatGRASP(object):
 
         # Consecutivas buscas locais na melhor solução.
         while(curr_time < self.limit):
-            N_prev = prev_sol.get_neighborhood_fraction(prev_sig)
+            prev_sol.construct_neighborhood(
+                self.k, prev_sig, self.ffp.G, self.f)
+            N_prev = prev_sol.neighborhood
 
             # Busca local com T iterações
             problem.T = ceil((1+self.eps)*prev_sol.T)
@@ -252,8 +254,9 @@ class NatGRASP(object):
             sigma = self.neighborhood_update(sigma, curr_sol)
 
             # Verificar critérios de parada: convergência e segundo reinício.
-            N_curr = curr_sol.get_neighborhood_fraction(sigma)
-
+            curr_sol.construct_neighborhood(
+                self.k, sigma, self.ffp.G, self.f)
+            N_curr = curr_sol.neighborhood
             if len(N_prev.symmetric_difference(N_curr)) == 0 or \
                     (sigma == prev_sig and gamma):
                 break
