@@ -19,8 +19,7 @@ import networkx as nx
 
 from argparse import ArgumentParser
 from gurobipy import GRB
-#from FFP import FFP
-#from Solution import Solution
+
 
 def m_ffm(G: nx.Graph, B: list, D: int, T: int, time: float):
     '''
@@ -40,6 +39,7 @@ def m_ffm(G: nx.Graph, B: list, D: int, T: int, time: float):
 
     # Inicializar modelo
     model = gp.Model('m-ffm')
+    model.setParam('OutputFlag', 0)
     model.setParam('TimeLimit', time)
 
     # Variáveis binárias:
@@ -113,10 +113,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     #ffp = FFP(args.D)
-    #ffp.read_input(args.input_file)
+    # ffp.read_input(args.input_file)
 
     # Executar M-FFM
     #m = m_ffm(ffp.G, ffp.B, ffp.D, ffp.T, 1800)
-    #m.optimize()
+    # m.optimize()
     #sol = Solution.vars_to_solution(m, ffp.G, ffp.T)
-    #print(sol)
+    # print(sol)

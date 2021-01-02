@@ -22,7 +22,7 @@ from types import FunctionType
 
 from Solution import Solution
 from FFP import FFP
-from desc import num_of_descendants
+from f_desc import num_of_descendants
 
 
 class NatGRASP(object):
@@ -108,9 +108,24 @@ class NatGRASP(object):
         sol = Solution(defended=defended, burned=burned,
                        iterations=its, T=t)
         sol.calculate_cost(G)
+        sol.construct_neighborhood(self.k, G, self.f)
         return sol
 
     def pool_selection(self, S: set, rho: int):
+        '''
+        Método que seleciona um pool de tamanho `rho` do conjunto de soluções
+        `S`. O objetivo é selecionar um nº pequeno de soluções diversas e de
+        boa qualidade, visto que a busca local envolve a resolução do modelo
+        PLI.
+
+            Args:
+                S   (set): conjunto de soluções únicas geradas pela heurística
+                    construtiva.
+                rho (int): tamanho desejado do pool.
+            Returns:
+                O pool de soluções selecionado.
+        '''
+
         S = list(S)
         S.sort(key=lambda i: i.cost)
         best = S.pop()
@@ -122,7 +137,7 @@ class NatGRASP(object):
         diff = (q4 - q0)//4
         q = list(range(q0+diff, q4+1, diff))
         Si = [[], [], [], []]
-        
+
         # Separar conjuntos Si.
         i = 0
         for j in S:
@@ -131,22 +146,21 @@ class NatGRASP(object):
             Si[i].append(j)
 
         # Iniciar pool e construir vizinhanças para economizar tempo.
-        neigh = lambda s: s.construct_neighborhood(self.k, 1.0, self.ffp.G,
-                                                   self.f) 
         pool = []
-        n_s = {s:neigh(s) for s in S}
-        n_best = neigh(best)
-            
+        n_s = {s: set(s.neighborhood) for s in S}
+        n_best = best.neighborhood
+
         # Pseudocodigo começa aqui:
         # Para cada Si (ao contrário), adiciona no pool até "rho-1" elementos.
         # Em seguida, verifica diversidade, substituindo os elementos
-        # menos diversos até acabar o último conjunto. 
+        # menos diversos até acabar o último conjunto.
         for i in range(4)[::-1]:
             for s in Si[i]:
                 if len(pool) < rho-1:
                     pool.append(s)
                 else:
-                    old_s = min(pool, key=lambda x: len(n_s[x].symmetric_difference(n_best)))
+                    old_s = min(pool, key=lambda x: len(
+                        n_s[x].symmetric_difference(n_best)))
                     if len(n_s[s].symmetric_difference(n_best)) > \
                             len(n_s[old_s].symmetric_difference(n_best)):
                         pool.remove(old_s)
@@ -154,7 +168,7 @@ class NatGRASP(object):
 
             if len(pool) == rho-1:
                 break
-        
+
         return pool, best
 
     def neighborhood_update(self, sigma: float, solution: Solution):
@@ -226,8 +240,7 @@ class NatGRASP(object):
 
         # Consecutivas buscas locais na melhor solução.
         while(curr_time < self.limit):
-            N_prev = prev_sol.construct_neighborhood(self.k, prev_sig,
-                                                     problem.G, self.f)
+            N_prev = prev_sol.get_neighborhood_fraction(prev_sig)
 
             # Busca local com T iterações
             problem.T = ceil((1+self.eps)*prev_sol.T)
@@ -239,15 +252,14 @@ class NatGRASP(object):
             sigma = self.neighborhood_update(sigma, curr_sol)
 
             # Verificar critérios de parada: convergência e segundo reinício.
-            N_curr = curr_sol.construct_neighborhood(self.k, sigma,
-                                                     problem.G, self.f)
+            N_curr = curr_sol.get_neighborhood_fraction(sigma)
 
             if len(N_prev.symmetric_difference(N_curr)) == 0 or \
-                    (sigma == sig_prev and gamma):
+                    (sigma == prev_sig and gamma):
                 break
 
             # Reinício.
-            if sigma == sig_prev and not gamma:
+            if sigma == prev_sig and not gamma:
                 sigma = 0.5
                 gamma = True
 
@@ -298,11 +310,11 @@ if __name__ == "__main__":
         S.add(curr)
 
     # Passo 2: Seleção
-    P, best = method.pool_selection(S, rho)
-    
-    print("Pool:", P)
-    print("Length:", len(P))
+    # P, best = method.pool_selection(S, rho)
+
+    # print("Pool:", P)
+    # print("Length:", len(P))
 
     # Passo 3: Busca Local
-    best = method.adaptive_local_search(ffp, P, best, time()-start_time)
-    print(best)
+    # best = method.adaptive_local_search(ffp, P, best, time()-start_time)
+    # print(best)

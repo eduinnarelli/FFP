@@ -20,6 +20,7 @@ from math import ceil
 from M_FFM import m_ffm
 from Solution import Solution
 
+
 class FFP(object):
     def __init__(self, D: int, G: Graph = Graph(), B: list = [], T: int = 0):
         # Parâmetro obrigatório
@@ -53,27 +54,27 @@ class FFP(object):
 
         # Limite de iterações
         self.T = ceil(n / self.D)
-    
+
     def start_model(self):
         self.model = m_ffm(self.G, self.B, self.D, self.T, 0)
-        
-    def local_search(self, sol: Solution, k: int, sigma: float, f: str, 
+
+    def local_search(self, sol: Solution, k: int, sigma: float, f: str,
                      time_limit: float):
-        if (time_limit <= 0): 
+        if (time_limit <= 0):
             return sol
-        
+
         # Construir grupo de variáveis fixadas.
-        neigh = sol.construct_neighborhood(k, sigma, self.G, f)
+        neigh = sol.get_neighborhood_fraction(sigma)
         N = set(self.G.nodes).difference(neigh.union(sol.defended))
-        
+
         # Fixar variáveis d_vt para v \in N e 0 <= t <= T
         d = self.model._d
         new_constrs = self.model.addConstrs((
-                        d[v, t] == 0 for v in N for t in range(self.T+1)
-                      ))
+            d[v, t] == 0 for v in N for t in range(self.T+1)
+        ))
         self.model.setParam('TimeLimit', time_limit)
         self.model.update()
-        
+
         # Resolver M-FFM e retornar solução.
         self.model.optimize()
         self.model.remove(new_constrs)
