@@ -108,7 +108,7 @@ class NatGRASP(object):
         sol = Solution(defended=defended, burned=burned,
                        iterations=its, T=t)
         sol.calculate_cost(G)
-        sol.construct_neighborhood(self.k, 1.0, G, self.f)
+        sol.construct_neighborhood(self.k, G)
         return sol
 
     def pool_selection(self, S: set, rho: int):
@@ -253,9 +253,8 @@ class NatGRASP(object):
 
         # Consecutivas buscas locais na melhor solução.
         while(curr_time < self.limit):
-            prev_sol.construct_neighborhood(
+            N_prev = prev_sol.filter_neighborhood(
                 self.k, prev_sig, self.ffp.G, self.f)
-            N_prev = prev_sol.neighborhood
 
             # Busca local com T iterações
             problem.T = ceil((1+self.eps)*prev_sol.T)
@@ -267,8 +266,8 @@ class NatGRASP(object):
             sigma = self.neighborhood_update(sigma, curr_sol)
 
             # Verificar critérios de parada: convergência e segundo reinício.
-            curr_sol.construct_neighborhood(self.k, sigma, self.ffp.G, self.f)
-            N_curr = curr_sol.neighborhood
+            N_curr = curr_sol.filter_neighborhood(
+                self.k, sigma, self.ffp.G, self.f)
             if len(N_prev.symmetric_difference(N_curr)) == 0 or \
                     (sigma == prev_sig and gamma):
                 break

@@ -64,8 +64,7 @@ class FFP(object):
             return sol
 
         # Construir grupo de variáveis fixadas.
-        sol.construct_neighborhood(k, sigma, self.G, f)
-        neigh = sol.neighborhood
+        neigh = sol.filter_neighborhood(k, sigma, self.G, f)
         N = set(self.G.nodes).difference(neigh.union(sol.defended))
 
         # Fixar variáveis d_vt para v \in N e 0 <= t <= T

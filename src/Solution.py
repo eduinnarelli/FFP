@@ -29,24 +29,19 @@ class Solution(object):
         self.T = T
         self.cost = cost
         self.optimal = optimal
-        self.neighborhood = set()
+        self.neighborhood = None
 
     def calculate_cost(self, G: Graph):
         self.cost = len(set(G.nodes).difference(self.burned))
 
-    def construct_neighborhood(self, k: int, sigma: float, G: Graph,
-                               f: FunctionType):
+    def construct_neighborhood(self, k: int, G: Graph):
         '''
-        Função que constrói vizinhança dos vértices defendidos na solução,
-        filtrando do conjunto de todas k-vizinhanças a fração sigma de melhores
-        vizinhos de acordo com um critério guloso regido pela função f.
+        Função que constrói todas as k-vizinhanças dos vértices defendidos na
+        solução.
 
             Args:
-                k     (int): profundidade da vizinhança.
-                sigma (float): fração dos melhores vizinhos a serem
-                               retornados.
-                G     (Graph): o grafo de entrada.
-                f     (FunctionType): critério guloso para rankear vizinhos.
+                k (int): profundidade da vizinhança.
+                G (Graph): o grafo de entrada.
         '''
 
         # Conjunto de todas as k-vizinhanças
@@ -63,13 +58,34 @@ class Solution(object):
                 if v_n not in self.defended.union(self.burned)
             )
 
+        self.neighborhood = kn
+
+    def filter_neighborhood(self, k: int, sigma: float, G: Graph,
+                            f: FunctionType):
+        '''
+        Função que filtra do conjunto de todas k-vizinhanças a fração sigma de
+        melhores vizinhos de acordo com um critério guloso regido pela função
+        f.
+
+            Args:
+                k     (int): profundidade da vizinhança.
+                sigma (float): fração dos melhores vizinhos a serem
+                               retornados.
+                G     (Graph): o grafo de entrada.
+                f     (FunctionType): critério guloso para rankear vizinhos.
+        '''
+
+        # Construir k-vizinhanças, se preciso
+        if self.neighborhood is None:
+            self.construct_neighborhood(k, G)
+
         # Ordenar k-vizinhanças em ordem descrescente usando função f
-        kn_sorted = sorted(list(kn),
+        kn_sorted = sorted(list(self.k_neighborhood),
                            key=lambda v: f(self, G, v),
                            reverse=True)
 
-        # Armazenar fração sigma dos melhores vizinhos
-        self.neighborhood = set(kn_sorted[:ceil(sigma * len(kn_sorted))])
+        # Retornar fração sigma dos melhores vizinhos
+        return set(kn_sorted[:ceil(sigma * len(kn_sorted))])
 
     def full_solution(self):
         defended = [(x, self.iterations[x]) for x in self.defended]
