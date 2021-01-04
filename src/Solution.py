@@ -69,21 +69,21 @@ class Solution(object):
                            reverse=True)
 
         # Armazenar fração sigma dos melhores vizinhos
-        self.neighborhood = set(
-            kn_sorted[:ceil(sigma * len(self.neighborhood))])
+        self.neighborhood = set(kn_sorted[:ceil(sigma * len(kn_sorted))])
 
     def full_solution(self):
         defended = [(x, self.iterations[x]) for x in self.defended]
         burned = [(x, self.iterations[x]) for x in self.burned]
         return defended, burned
 
-    def __ne__(self, other):
+    def __eq__(self, other):
         '''
-        Duas soluções são consideradas distintas se o tamanho da diferença
-        simétrica de suas vizinhanças for maior que 0.
+        Duas soluções são consideradas iguais se o tamanho da diferença
+        simétrica de suas vizinhanças for 0.
         '''
         return isinstance(other, Solution) and \
-            self.neighborhood.symmetric_difference(other.neighborhood) > 0
+            len(self.neighborhood.symmetric_difference(other.neighborhood)) \
+            == 0
 
     def __hash__(self):
         return hash(tuple(sorted(tuple(self.neighborhood))))
