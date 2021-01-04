@@ -128,13 +128,14 @@ class NatGRASP(object):
 
         S = sorted(list(S), key=lambda s: s.cost)
 
-        # Criar vetor q de quartis q1, q2 e q3 de S
+        # Criar vetor q de quartis q1, q2, q3 e q4 de S
         # https://pt.wikipedia.org/wiki/Quartil
         n = len(S)
         q = [
             S[(n+1) // 4].cost,
             (S[n // 2].cost + S[(n // 2) + 1].cost) / 2,
             S[3*(n+1) // 4].cost,
+            S[-1].cost
         ]
 
         # Subconjuntos Si com soluções de S (menos a melhor) distribuidas entre
@@ -144,7 +145,7 @@ class NatGRASP(object):
         i = 0
         for s in S:
             # Obs: podem haver quartis iguais, por isso o while
-            while s.cost > q[i] and i < 2:
+            while s.cost > q[i] and i < len(q):
                 i += 1
             Si[i].append(s)
 
