@@ -108,7 +108,7 @@ class NatGRASP(object):
         sol = Solution(defended=defended, burned=burned,
                        iterations=its, T=t)
         sol.calculate_cost(G)
-        sol.construct_neighborhood(self.k, G, self.f)
+        sol.construct_neighborhood(self.k, 1.0, G, self.f)
         return sol
 
     def pool_selection(self, S: set, rho: int):
@@ -126,28 +126,31 @@ class NatGRASP(object):
                 O pool de soluções selecionado.
         '''
 
-        S = list(S)
-        S.sort(key=lambda i: i.cost)
+        S = sorted(list(S), key=lambda s: s.cost)
+
+        # Criar vetor q de quartis q1, q2 e q3 de S
+        # https://pt.wikipedia.org/wiki/Quartil
+        n = len(S)
+        q = [
+            S[(n+1) // 4].cost,
+            (S[n // 2].cost + S[(n // 2) + 1].cost) / 2,
+            S[3*(n+1) // 4].cost,
+        ]
+
+        # Subconjuntos Si com soluções de S (menos a melhor) distribuidas entre
+        # os quartis
         best = S.pop()
-        q0 = S[0].cost
-        q4 = best.cost
-
-        # TODO: não sei se está certo.
-        # Criar quantis q_i
-        diff = (q4 - q0)//4
-        q = list(range(q0+diff, q4+1, diff))
         Si = [[], [], [], []]
-
-        # Separar conjuntos Si.
         i = 0
-        for j in S:
-            if (j.cost > q[i]):
+        for s in S:
+            # Obs: podem haver quartis iguais, por isso o while
+            while s.cost > q[i] and i < 2:
                 i += 1
-            Si[i].append(j)
+            Si[i].append(s)
 
-        # Iniciar pool e construir vizinhanças para economizar tempo.
+        # Iniciar pool e armazenar vizinhanças
         pool = []
-        n_s = {s: set(s.neighborhood) for s in S}
+        n_s = {s: s.neighborhood for s in S}
         n_best = best.neighborhood
 
         # Pseudocodigo começa aqui:
@@ -156,16 +159,26 @@ class NatGRASP(object):
         # menos diversos até acabar o último conjunto.
         for i in range(4)[::-1]:
             for s in Si[i]:
+
+                # Adicionar as primeiras rho-1 soluções visitadas ao pool
                 if len(pool) < rho-1:
                     pool.append(s)
+
                 else:
+                    # Solução do pool com menor diferença simétrica da
+                    # vizinhança em relação a n_best
                     old_s = min(pool, key=lambda x: len(
                         n_s[x].symmetric_difference(n_best)))
+
+                    # Se a diferença simétrica da vizinhanaça de s em rel. a
+                    # n_best for maior que a de old_s, substituir old_s por s
+                    # no pool
                     if len(n_s[s].symmetric_difference(n_best)) > \
                             len(n_s[old_s].symmetric_difference(n_best)):
                         pool.remove(old_s)
                         pool.append(s)
 
+            # Parar se pool estiver cheio, para priorizar soluções boas
             if len(pool) == rho-1:
                 break
 
@@ -254,8 +267,7 @@ class NatGRASP(object):
             sigma = self.neighborhood_update(sigma, curr_sol)
 
             # Verificar critérios de parada: convergência e segundo reinício.
-            curr_sol.construct_neighborhood(
-                self.k, sigma, self.ffp.G, self.f)
+            curr_sol.construct_neighborhood(self.k, sigma, self.ffp.G, self.f)
             N_curr = curr_sol.neighborhood
             if len(N_prev.symmetric_difference(N_curr)) == 0 or \
                     (sigma == prev_sig and gamma):
@@ -313,10 +325,10 @@ if __name__ == "__main__":
         S.add(curr)
 
     # Passo 2: Seleção
-    # P, best = method.pool_selection(S, rho)
+    P, best = method.pool_selection(S, rho)
 
-    # print("Pool:", P)
-    # print("Length:", len(P))
+    print("Pool:", P)
+    print("Length:", len(P))
 
     # Passo 3: Busca Local
     # best = method.adaptive_local_search(ffp, P, best, time()-start_time)
