@@ -133,10 +133,11 @@ class NatGRASP(object):
         # https://pt.wikipedia.org/wiki/Quartil
         n = len(S)
         q = [
-            S[(n+1) // 4].cost,
-            (S[n // 2].cost + S[(n // 2) + 1].cost) / 2,
-            S[3*(n+1) // 4].cost,
-            S[-1].cost
+            S[n // 4].cost,  # q1
+            (S[n // 2].cost + S[(n + 1) // 2].cost) / 2 \
+            if n % 2 == 0 else S[n // 2].cost,  # q2
+            S[3*n // 4].cost,  # q3
+            S[-1].cost  # q4
         ]
 
         # Subconjuntos Si com soluções de S (menos a melhor) distribuidas entre
@@ -306,7 +307,7 @@ if __name__ == "__main__":
     f = num_of_descendants
     eps = 0.5
     limit = ffp.G.number_of_nodes() / 2
-    alpha = 0.3
+    alpha = 0.1
     eta = 11000
     rho = 4
     seed_number = 1337
