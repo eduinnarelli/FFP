@@ -109,7 +109,7 @@ class NatGRASP(object):
         sol = Solution(defended=defended, burned=burned,
                        iterations=its, T=t)
         sol.calculate_cost(G)
-        sol.construct_neighborhood(self.k, G)
+        sol.construct_full_neighborhood(self.k, G)
         return sol
 
     def pool_selection(self, S: set, rho: int):
@@ -226,7 +226,7 @@ class NatGRASP(object):
 
         # Explorar melhor solução (agora com vizinhança adaptada)
         T = ceil((1+self.eps)*best_sol.T)
-        curr_sol = problem.local_search(best_sol, self.k, sigma, self.f, 
+        curr_sol = problem.local_search(best_sol, self.k, sigma, self.f,
                                         T, local_time)
         inc_sol = curr_sol if curr_sol.cost > inc_sol.cost else inc_sol
         curr_time = time() - self.start_time
@@ -293,9 +293,9 @@ if __name__ == "__main__":
     parser.add_argument('--input-file', type=str, required=True)
     parser.add_argument('--D', type=int, required=True)
     args = parser.parse_args()
-    
+
     if not exists(args.input_file):
-        printf("Instance does not exist! Try again.")
+        print("Instance does not exist! Try again.")
 
     # Instanciar problema
     ffp = FFP(args.D)
@@ -330,19 +330,19 @@ if __name__ == "__main__":
         curr = method.constructive_heuristic_th(alpha)
         S.add(curr)
 
-    # Passo 2: Seleção
+    # PASSO 2: Seleção
     P, best = method.pool_selection(S, rho)
 
-    # print("Pool:", P)
-    # print("Length:", len(P))
+    print("Best before local search:\n", best)
 
-    # Passo 3: Busca Local
+    # PASSO 3: Busca Local
     best = method.adaptive_local_search(ffp, P, best, time()-start_time)
-    
-    # Passo Final: Imprimir resultado
+
+    # PASSO FINAL: Imprimir resultado
     final_time = time()-start_time
     path, filename = split(args.input_file)
     directory = split(path)[1]
-    
-    print(best)
-    print(f"\"{directory}\",{ffp.G.number_of_nodes()},{best.cost},\"{filename}\",{args.D},{final_time:.4f},{seed_number}")
+
+    print("Best after local search:\n", best)
+    print(f"\"{directory}\",{ffp.G.number_of_nodes()},{best.cost},"
+          f"\"{filename}\",{args.D},{final_time:.4f},{seed_number}")

@@ -29,12 +29,13 @@ class Solution(object):
         self.T = T
         self.cost = cost
         self.optimal = optimal
+        self.kn = None
         self.neighborhood = None
 
     def calculate_cost(self, G: Graph):
         self.cost = len(set(G.nodes).difference(self.burned))
 
-    def construct_neighborhood(self, k: int, G: Graph):
+    def _construct_k_neighborhood(self, k: int, G: Graph):
         '''
         Função que constrói todas as k-vizinhanças dos vértices defendidos na
         solução.
@@ -58,7 +59,22 @@ class Solution(object):
                 if v_n not in self.defended.union(self.burned)
             )
 
-        self.neighborhood = kn.union(self.defended)
+        self.kn = kn
+
+    def construct_full_neighborhood(self, k: int, G: Graph):
+        '''
+        Função que constrói a k-vizinhança completa unida com os vértices
+        defendidos, usada como identificador de solução única.
+
+            Args:
+                k (int): profundidade da vizinhança.
+                G (Graph): o grafo de entrada.
+        '''
+
+        if self.kn is None:
+            self._construct_k_neighborhood(k, G)
+
+        self.neighborhood = self.kn.union(self.defended)
 
     def filter_neighborhood(self, k: int, sigma: float, G: Graph,
                             f: FunctionType):
@@ -76,16 +92,17 @@ class Solution(object):
         '''
 
         # Construir k-vizinhanças, se preciso
-        if self.neighborhood is None:
-            self.construct_neighborhood(k, G)
+        if self.kn is None:
+            self._construct_k_neighborhood(k, G)
 
         # Ordenar k-vizinhanças em ordem descrescente usando função f
-        kn_sorted = sorted(list(self.neighborhood),
+        kn_sorted = sorted(list(self.kn),
                            key=lambda v: f(self, G, v),
                            reverse=True)
 
-        # Retornar fração sigma dos melhores vizinhos
-        return set(kn_sorted[:ceil(sigma * len(kn_sorted))])
+        # Retornar fração sigma dos melhores vizinhos unidos com defendidos
+        return set(kn_sorted[:ceil(sigma * len(kn_sorted))])\
+            .union(self.defended)
 
     def full_solution(self):
         defended = [(x, self.iterations[x]) for x in self.defended]
@@ -95,7 +112,7 @@ class Solution(object):
     def __eq__(self, other):
         '''
         Duas soluções são consideradas iguais se o tamanho da diferença
-        simétrica de suas vizinhanças for 0.
+        simétrica de suas vizinhanças e defendidos for 0.
         '''
         return isinstance(other, Solution) and \
             len(self.neighborhood.symmetric_difference(other.neighborhood)) \
@@ -118,7 +135,7 @@ class Solution(object):
         defended, burned = set(), set()
 
         n = G.number_of_nodes()
-        iteration = [inf for i in range(n)]
+        iteration = [inf for _ in range(n)]
 
         # Converter variáveis para conjuntos/listas
         for v in range(n):
