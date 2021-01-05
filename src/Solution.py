@@ -56,7 +56,7 @@ class Solution(object):
                 v_n for v_n in list(single_source_shortest_path(G, d, k)
                                     .keys())
                 # Ignorar vértices queimados ou defendidos
-                if v_n not in self.defended.union(self.burned)
+                if v_n not in self.defended
             )
 
         self.kn = kn
@@ -119,7 +119,7 @@ class Solution(object):
             == 0
 
     def __hash__(self):
-        return hash(tuple(sorted(tuple(self.neighborhood))))
+        return hash((tuple(sorted(tuple(self.neighborhood))), self.cost))
 
     def __repr__(self):
         defended, burned = self.full_solution()
