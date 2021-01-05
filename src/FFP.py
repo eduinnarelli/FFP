@@ -11,7 +11,7 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 04/01/2021
+Modificado em: 05/01/2021
 '''
 
 from networkx import Graph
@@ -30,7 +30,6 @@ class FFP(object):
         self.G = G
         self.B = B
         self.max_T = T
-        self.model = None
 
     def read_input(self, filename: str):
         ''' Função para carregar uma instância.'''
@@ -55,9 +54,6 @@ class FFP(object):
         # Limite de iterações
         self.max_T = ceil(n / self.D)
 
-    def start_model(self):
-        self.model = m_ffm(self.G, self.B, self.D, self.max_T, 0)
-
     def local_search(self, sol: Solution, k: int, sigma: float, f: str,
                      T: int, time_limit: float):
         if (time_limit <= 0):
@@ -68,18 +64,17 @@ class FFP(object):
         N = set(self.G.nodes).difference(neigh)
 
         # Fixar variáveis d_vt para v \in N e 0 <= t <= T
-        T = min(T, self.max_T)
-        d = self.model._d
-        new_constrs = self.model.addConstrs((
+        T = min(self.max_T, T)
+        model = m_ffm(self.G, self.B, self.D, T, time_limit)
+        d = model._d
+        model.addConstrs((
             d[v, t] == 0 for v in N for t in range(T+1)
         ))
-        self.model.setParam('TimeLimit', time_limit)
-        self.model.update()
+        model.update()
 
         # Resolver M-FFM e retornar solução.
-        self.model.optimize()
-        self.model.remove(new_constrs)
-        return Solution.vars_to_solution(self.model, self.G, T)
+        model.optimize()
+        return Solution.vars_to_solution(model, self.G, T)
 
     def __repr__(self):
         return (f"FFP\n"

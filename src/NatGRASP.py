@@ -11,7 +11,7 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 04/01/2021
+Modificado em: 05/01/2021
 '''
 
 from argparse import ArgumentParser
@@ -307,7 +307,7 @@ if __name__ == "__main__":
     f = num_of_descendants
     eps = 0.5
     limit = ffp.G.number_of_nodes() / 2
-    alpha = 0.1
+    alpha = 0.3
     eta = 11000
     rho = 4
     seed_number = 1337
@@ -316,7 +316,6 @@ if __name__ == "__main__":
     seed(seed_number)
     start_time = time()
     method = NatGRASP(ffp, k, f, eps, limit, start_time)
-    ffp.start_model()
 
     # PASSO 1: Construção
     S = set()
