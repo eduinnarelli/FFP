@@ -80,7 +80,7 @@ class Solution(object):
             self.construct_neighborhood(k, G)
 
         # Ordenar k-vizinhanças em ordem descrescente usando função f
-        kn_sorted = sorted(list(self.k_neighborhood),
+        kn_sorted = sorted(list(self.neighborhood),
                            key=lambda v: f(self, G, v),
                            reverse=True)
 
