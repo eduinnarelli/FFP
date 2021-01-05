@@ -11,7 +11,7 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 01/01/2021
+Modificado em: 04/01/2021
 '''
 
 from networkx import Graph
@@ -29,7 +29,7 @@ class FFP(object):
         # Parâmetros opcionais.
         self.G = G
         self.B = B
-        self.T = T
+        self.max_T = T
         self.model = None
 
     def read_input(self, filename: str):
@@ -53,24 +53,25 @@ class FFP(object):
         n = self.G.number_of_nodes()
 
         # Limite de iterações
-        self.T = ceil(n / self.D)
+        self.max_T = ceil(n / self.D)
 
     def start_model(self):
-        self.model = m_ffm(self.G, self.B, self.D, self.T, 0)
+        self.model = m_ffm(self.G, self.B, self.D, self.max_T, 0)
 
     def local_search(self, sol: Solution, k: int, sigma: float, f: str,
-                     time_limit: float):
+                     T: int, time_limit: float):
         if (time_limit <= 0):
             return sol
 
         # Construir grupo de variáveis fixadas.
         neigh = sol.filter_neighborhood(k, sigma, self.G, f)
-        N = set(self.G.nodes).difference(neigh.union(sol.defended))
+        N = set(self.G.nodes).difference(neigh)
 
         # Fixar variáveis d_vt para v \in N e 0 <= t <= T
+        T = min(T, self.max_T)
         d = self.model._d
         new_constrs = self.model.addConstrs((
-            d[v, t] == 0 for v in N for t in range(self.T+1)
+            d[v, t] == 0 for v in N for t in range(T+1)
         ))
         self.model.setParam('TimeLimit', time_limit)
         self.model.update()
@@ -78,11 +79,11 @@ class FFP(object):
         # Resolver M-FFM e retornar solução.
         self.model.optimize()
         self.model.remove(new_constrs)
-        return Solution.vars_to_solution(self.model, self.G, self.T)
+        return Solution.vars_to_solution(self.model, self.G, T)
 
     def __repr__(self):
         return (f"FFP\n"
-                f"Firefighters: {self.D}, Iterations: {self.T}\n"
+                f"Firefighters: {self.D}, Max Iterations: {self.max_T}\n"
                 f"Initial Burned Nodes: {self.B}\n"
                 f"Nodes: {self.G.nodes}\n"
                 f"Edges: {self.G.edges}")

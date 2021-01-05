@@ -11,7 +11,7 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 31/12/2020
+Modificado em: 04/01/2021
 '''
 
 from networkx import Graph, single_source_shortest_path
@@ -58,7 +58,7 @@ class Solution(object):
                 if v_n not in self.defended.union(self.burned)
             )
 
-        self.neighborhood = kn
+        self.neighborhood = kn.union(self.defended)
 
     def filter_neighborhood(self, k: int, sigma: float, G: Graph,
                             f: FunctionType):
@@ -80,7 +80,7 @@ class Solution(object):
             self.construct_neighborhood(k, G)
 
         # Ordenar k-vizinhanças em ordem descrescente usando função f
-        kn_sorted = sorted(list(self.k_neighborhood),
+        kn_sorted = sorted(list(self.neighborhood),
                            key=lambda v: f(self, G, v),
                            reverse=True)
 
@@ -136,5 +136,5 @@ class Solution(object):
                     break
 
         optimal = model.status == GRB.Status.OPTIMAL
-        return Solution(defended, burned, iteration, T, model.objVal,
+        return Solution(defended, burned, iteration, T, int(model.objVal),
                         optimal)

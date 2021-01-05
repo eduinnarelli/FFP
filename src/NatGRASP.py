@@ -11,14 +11,15 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 01/01/2021
+Modificado em: 04/01/2021
 '''
 
 from argparse import ArgumentParser
 from math import ceil, inf
-from random import sample
+from random import sample, seed
 from time import time
 from types import FunctionType
+from os.path import exists, split
 
 from Solution import Solution
 from FFP import FFP
@@ -145,7 +146,7 @@ class NatGRASP(object):
         i = 0
         for s in S:
             # Obs: podem haver quartis iguais, por isso o while
-            while s.cost > q[i] and i < len(q):
+            while s.cost > q[i] and i < 3:
                 i += 1
             Si[i].append(s)
 
@@ -213,8 +214,8 @@ class NatGRASP(object):
             sol_time = (self.limit - curr_time - local_time)/rho
 
             # Busca local com T iterações
-            problem.T = ceil((1+self.eps)*s.T)
-            curr_sol = problem.local_search(s, self.k, sigma, self.f,
+            T = ceil((1+self.eps)*s.T)
+            curr_sol = problem.local_search(s, self.k, sigma, self.f, T,
                                             sol_time)
             inc_sol = curr_sol if curr_sol.cost > inc_sol.cost else inc_sol
 
@@ -224,9 +225,9 @@ class NatGRASP(object):
             curr_time = time() - self.start_time
 
         # Explorar melhor solução (agora com vizinhança adaptada)
-        problem.T = ceil((1+self.eps)*best_sol.T)
-        curr_sol = problem.local_search(best_sol, self.k, sigma, self.f,
-                                        local_time)
+        T = ceil((1+self.eps)*best_sol.T)
+        curr_sol = problem.local_search(best_sol, self.k, sigma, self.f, 
+                                        T, local_time)
         inc_sol = curr_sol if curr_sol.cost > inc_sol.cost else inc_sol
         curr_time = time() - self.start_time
 
@@ -258,9 +259,9 @@ class NatGRASP(object):
                 self.k, prev_sig, self.ffp.G, self.f)
 
             # Busca local com T iterações
-            problem.T = ceil((1+self.eps)*prev_sol.T)
+            T = ceil((1+self.eps)*prev_sol.T)
             curr_sol = problem.local_search(prev_sol, self.k, prev_sig,
-                                            self.f, self.limit - curr_time)
+                                            self.f, T, self.limit - curr_time)
             best_sol = curr_sol if curr_sol.cost > best_sol.cost else best_sol
 
             # Atualizar sigma
@@ -292,6 +293,9 @@ if __name__ == "__main__":
     parser.add_argument('--input-file', type=str, required=True)
     parser.add_argument('--D', type=int, required=True)
     args = parser.parse_args()
+    
+    if not exists(args.input_file):
+        printf("Instance does not exist! Try again.")
 
     # Instanciar problema
     ffp = FFP(args.D)
@@ -305,8 +309,10 @@ if __name__ == "__main__":
     alpha = 0.3
     eta = 11000
     rho = 4
+    seed_number = 1337
 
     # Instanciar mateurística
+    seed(seed_number)
     start_time = time()
     method = NatGRASP(ffp, k, f, eps, limit, start_time)
     ffp.start_model()
@@ -327,9 +333,16 @@ if __name__ == "__main__":
     # Passo 2: Seleção
     P, best = method.pool_selection(S, rho)
 
-    print("Pool:", P)
-    print("Length:", len(P))
+    # print("Pool:", P)
+    # print("Length:", len(P))
 
     # Passo 3: Busca Local
-    # best = method.adaptive_local_search(ffp, P, best, time()-start_time)
-    # print(best)
+    best = method.adaptive_local_search(ffp, P, best, time()-start_time)
+    
+    # Passo Final: Imprimir resultado
+    final_time = time()-start_time
+    path, filename = split(args.input_file)
+    directory = split(path)[1]
+    
+    print(best)
+    print(f"\"{directory}\",{ffp.G.number_of_nodes()},{best.cost},\"{filename}\",{args.D},{final_time:.4f},{seed_number}")

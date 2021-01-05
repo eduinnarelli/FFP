@@ -11,7 +11,7 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 15/12/2020
+Modificado em: 04/01/2021
 '''
 
 import gurobipy as gp
@@ -107,7 +107,7 @@ if __name__ == '__main__':
     ffp.read_input(args.input_file)
 
     # Executar M-FFM
-    m = ffm(ffp.G, ffp.B, ffp.D, ffp.T, 1800)
+    m = ffm(ffp.G, ffp.B, ffp.D, ffp.max_T, 1800)
     m.optimize()
-    sol = Solution.vars_to_solution(m, ffp)
+    sol = Solution.vars_to_solution(m, ffp.G, ffp.max_T)
     print(sol)
