@@ -74,7 +74,10 @@ class FFP(object):
 
         # Resolver M-FFM e retornar solução.
         model.optimize()
-        return Solution.vars_to_solution(model, self.G, T)
+        if model.SolCount > 0:
+            sol = Solution.vars_to_solution(model, self.G, T)
+        
+        return sol
 
     def __repr__(self):
         return (f"FFP\n"

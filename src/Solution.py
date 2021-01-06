@@ -11,7 +11,7 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 04/01/2021
+Modificado em: 05/01/2021
 '''
 
 from networkx import Graph, single_source_shortest_path
@@ -136,7 +136,7 @@ class Solution(object):
 
         n = G.number_of_nodes()
         iteration = [inf for _ in range(n)]
-
+        
         # Converter variáveis para conjuntos/listas
         for v in range(n):
             for t in range(T+1):
