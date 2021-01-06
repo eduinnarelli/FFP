@@ -23,11 +23,12 @@ from FFP import FFP
 from NatGRASP import NatGRASP
 from f_desc import num_of_descendants
 
+
 def run(filename, seed_number, ffp):
-    
+
     # Ler instância
     ffp.read_input(filename)
-    
+
     # Parâmetros
     k = 2
     f = num_of_descendants
@@ -60,13 +61,14 @@ def run(filename, seed_number, ffp):
 
     # PASSO 3: Busca Local
     best = method.adaptive_local_search(ffp, P, best, time()-start_time)
-    
+
     return best, time()-start_time
+
 
 def print_result(filename, n, best, D, final_time):
     path, filename = split(filename)
     directory = split(path)[1]
-    
+
     print(f"\"{directory}\",{n},{best.cost},"
           f"\"{filename}\",{D},{final_time:.4f}")
 
@@ -77,18 +79,18 @@ if __name__ == "__main__":
     parser = ArgumentParser(add_help=False)
     parser.add_argument('--input-file', type=str, required=True)
     args = parser.parse_args()
-    
+
     if not exists(args.input_file):
         print("Instance does not exist! Try again.")
-    
+
     # Instanciar problema
     seed_number = 1337
     ffp = FFP(5)
-    
-    for D in range(1,11):
+
+    for D in range(1, 11):
         ffp.D = D
         best, final_time = run(args.input_file, seed_number, ffp)
-        
+
         # Imprimir resultado
-        print_result(args.input_file, ffp.G.number_of_nodes(), 
+        print_result(args.input_file, ffp.G.number_of_nodes(),
                      best, D, final_time)
