@@ -41,7 +41,7 @@ def ffm(G: nx.Graph, B: list, D: int, T: int, time: float):
 
     # Inicializar modelo
     model = gp.Model('ffm')
-    model.setParam('OutputFlag', 0)
+    #model.setParam('OutputFlag', 0)
     model.setParam('TimeLimit', time)
 
     # Variáveis binárias:

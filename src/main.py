@@ -80,14 +80,19 @@ def run_to_csv(filenames, D_range, methods, out_file):
     for run in methods:
         results = []
         prefix = run.__name__
+        i=0
     
         # Executar para cada arquivo.
         for f in filenames:
+            i+=1
             
             # Ler instância
             ffp.read_input(f)
             
+            j=0
             for D in D_range:
+                j+=1
+                print(f"Method {prefix}: {i}/{len(filenames)}, {j}/{len(D_range)} runs", end='\r')
                 ffp.D = D
                 best, final_time = run(ffp, seed_number)
 
@@ -95,6 +100,7 @@ def run_to_csv(filenames, D_range, methods, out_file):
                 results.append(result_to_dict(f, ffp.G.number_of_nodes(),
                                               best, D, final_time))
         dicts_to_csv(results, prefix, out_file)
+        print()
 
 def run_and_print(filenames, D_range, methods):
     
