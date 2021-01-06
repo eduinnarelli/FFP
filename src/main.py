@@ -15,13 +15,27 @@ Modificado em: 06/01/2021
 '''
 
 from argparse import ArgumentParser
-from os.path import exists, split
+from os.path import exists, split, join
 from random import seed
 from time import time
+from sys import exit
 
 from FFP import FFP
 from NatGRASP import NatGRASP
 from f_desc import num_of_descendants
+
+def generate_instance_list(filename):
+    f = open(filename)
+    l = f.read().splitlines()
+    f.close()
+    
+    l = list(filter(None, l))
+    
+    for i in range(len(l)):
+        split = l[i].split()
+        l[i] = join('instances',split[0],split[1])
+        
+    return l
 
 
 def run(filename, seed_number, ffp):
@@ -62,8 +76,7 @@ def run(filename, seed_number, ffp):
     # PASSO 3: Busca Local
     best = method.adaptive_local_search(ffp, P, best, time()-start_time)
 
-    return best, time()-start_time
-
+    return best, time()-start_time    
 
 def print_result(filename, n, best, D, final_time):
     path, filename = split(filename)
@@ -72,25 +85,33 @@ def print_result(filename, n, best, D, final_time):
     print(f"\"{directory}\",{n},{best.cost},"
           f"\"{filename}\",{D},{final_time:.4f}")
 
-
 if __name__ == "__main__":
 
     # Ler argumentos da linha de comando
     parser = ArgumentParser(add_help=False)
-    parser.add_argument('--input-file', type=str, required=True)
+    parser.add_argument('--input-file', required=True)
+    parser.add_argument('--instance-list', action='store_true')
     args = parser.parse_args()
 
     if not exists(args.input_file):
-        print("Instance does not exist! Try again.")
-
+        print("File does not exist! Try again.")
+        exit(0)
+        
+    # Criar lista de instâncias
+    if args.instance_list:
+        filenames = generate_instance_list(args.input_file)
+    else:
+        filenames= [args.input_file]
+    
     # Instanciar problema
     seed_number = 1337
     ffp = FFP(5)
 
-    for D in range(1, 11):
-        ffp.D = D
-        best, final_time = run(args.input_file, seed_number, ffp)
+    for f in filenames:
+        for D in range(1, 11):
+            ffp.D = D
+            best, final_time = run(f, seed_number, ffp)
 
-        # Imprimir resultado
-        print_result(args.input_file, ffp.G.number_of_nodes(),
-                     best, D, final_time)
+            # Imprimir resultado
+            print_result(f, ffp.G.number_of_nodes(),
+                         best, D, final_time)
