@@ -23,59 +23,64 @@ from sys import exit
 from FFP import FFP
 from Solution import Solution
 from f_desc import num_of_descendants
-from io_util import *
+from io_util import (generate_instance_list, print_result, dicts_to_csv,
+                     result_to_dict)
 
 from NatGRASP import NatGRASP
 from FFM import ffm
 from M_FFM import m_ffm
 
+
 def main():
-    methods = {'grasp':GRASP, 'ffm':FFM, 'mffm':M_FFM}
-    
+    methods = {'grasp': GRASP, 'ffm': FFM, 'mffm': M_FFM}
+
     # Ler argumentos da linha de comando
     parser = ArgumentParser(add_help=True)
     parser.add_argument('method')
     parser.add_argument('--input-file', required=True)
     parser.add_argument('--instance-list', action='store_true')
     parser.add_argument('--out-file', required=False)
-    parser.add_argument('--D', nargs='+', type=int, required=False, default=[2])
+    parser.add_argument('--D', nargs='+', type=int,
+                        required=False, default=[2])
     args = parser.parse_args()
-    
+
     # Verificar arquivo de entrada
     if not exists(args.input_file):
         print("File does not exist! Try again.")
         exit(0)
-    
+
     # Lista de métodos
     if args.method == 'all':
         mets = methods.values()
     elif args.method == 'ilp':
         mets = [FFM, M_FFM]
     elif args.method.lower() not in methods.keys():
-        print("Method does not exist! Available: 'grasp', 'ffm, 'mffm', 'ilp', 'all'")
+        print("Method does not exist! Available: 'grasp', 'ffm, 'mffm', 'ilp',"
+              "'all'")
         exit(0)
     else:
         mets = [methods[args.method]]
-    
+
     # Criar lista de instâncias
     if args.instance_list:
         filenames = generate_instance_list(args.input_file)
     else:
-        filenames= [args.input_file]
-    
+        filenames = [args.input_file]
+
     # Executar para CSV se nome do arquivo de saida for passado.
-    # Senão, executar com saída para stdout.    
+    # Senão, executar com saída para stdout.
     if args.out_file:
         run_to_csv(filenames, args.D, mets, args.out_file)
     else:
-        run_and_print(filenames, D_range, mets)
+        run_and_print(filenames, args.D, mets)
 
-def run_to_csv(filenames, D_range, methods, out_file):
-    
+
+def run_to_csv(filenames, D_list, methods, out_file):
+
     # Instanciar problema
     ffp = FFP(5)
     seed_number = 1337
-    
+
     # Executar cada método.
     for run in methods:
         results = []
@@ -90,7 +95,7 @@ def run_to_csv(filenames, D_range, methods, out_file):
             ffp.read_input(f)
             
             j=0
-            for D in D_range:
+            for D in D_list:
                 j+=1
                 print(f"Method {prefix}: {i}/{len(filenames)}, {j}/{len(D_range)} runs", end='\r')
                 ffp.D = D
@@ -102,30 +107,31 @@ def run_to_csv(filenames, D_range, methods, out_file):
         dicts_to_csv(results, prefix, out_file)
         print()
 
-def run_and_print(filenames, D_range, methods):
-    
+
+def run_and_print(filenames, D_list, methods):
+
     # Instanciar problema
     ffp = FFP(5)
     seed_number = 1337
-    
+
     # Executar cada método.
     for run in methods:
         print("Method:", run.__name__)
-        results = []
-    
+
         # Executar para cada arquivo
         for f in filenames:
-            
+
             # Ler instância
             ffp.read_input(f)
-            
-            for D in D_range:
+
+            for D in D_list:
                 ffp.D = D
                 best, final_time = run(ffp, seed_number)
 
                 # Imprimir resultado
                 print_result(f, ffp.G.number_of_nodes(),
                              best, D, final_time)
+
 
 def GRASP(ffp, seed_number):
 
@@ -162,21 +168,24 @@ def GRASP(ffp, seed_number):
     # PASSO 3: Busca Local
     best = method.adaptive_local_search(ffp, P, best, time()-start_time)
 
-    return best, time()-start_time    
+    return best, time()-start_time
+
 
 def FFM(ffp, *_):
     m = ffm(ffp.G, ffp.B, ffp.D, ffp.max_T, ffp.G.number_of_nodes() / 2)
     m.optimize()
-    
+
     sol = Solution.vars_to_solution(m, ffp.G, ffp.max_T)
     return sol, m.Runtime
-    
+
+
 def M_FFM(ffp, *_):
     m = m_ffm(ffp.G, ffp.B, ffp.D, ffp.max_T, ffp.G.number_of_nodes() / 2)
     m.optimize()
-    
+
     sol = Solution.vars_to_solution(m, ffp.G, ffp.max_T)
     return sol, m.Runtime
+
 
 if __name__ == "__main__":
     main()
