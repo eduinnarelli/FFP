@@ -1,0 +1,11 @@
+set,n,result,instance,D,runtime
+BBGRL,50,8,50_ep0.1_0_gilbert_1.in,1,32.5906
+BBGRL,50,43,50_ep0.1_0_gilbert_1.in,2,26.767
+BBGRL,50,47,50_ep0.1_0_gilbert_1.in,3,23.4443
+BBGRL,50,48,50_ep0.1_0_gilbert_1.in,4,20.9129
+BBGRL,50,49,50_ep0.1_0_gilbert_1.in,5,16.2458
+BBGRL,50,49,50_ep0.1_0_gilbert_1.in,6,14.9311
+BBGRL,50,49,50_ep0.1_0_gilbert_1.in,7,15.2215
+BBGRL,50,49,50_ep0.1_0_gilbert_1.in,8,14.3745
+BBGRL,50,49,50_ep0.1_0_gilbert_1.in,9,12.8083
+BBGRL,50,49,50_ep0.1_0_gilbert_1.in,10,11.2306
