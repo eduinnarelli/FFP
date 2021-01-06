@@ -85,19 +85,20 @@ def run_to_csv(filenames, D_list, methods, out_file):
     for run in methods:
         results = []
         prefix = run.__name__
-        i=0
+        inst=0
     
         # Executar para cada arquivo.
         for f in filenames:
-            i+=1
+            inst += 1
             
             # Ler instância
             ffp.read_input(f)
             
-            j=0
+            d_index=0
             for D in D_list:
-                j+=1
-                print(f"Method {prefix}: {i}/{len(filenames)}, {j}/{len(D_range)} runs", end='\r')
+                d_index += 1
+                print(f"Method {prefix}: {inst}/{len(filenames)}, "
+                      f"{d_index}/{len(D_list)} runs", end='\r')
                 ffp.D = D
                 best, final_time = run(ffp, seed_number)
 
@@ -116,7 +117,8 @@ def run_and_print(filenames, D_list, methods):
 
     # Executar cada método.
     for run in methods:
-        print("Method:", run.__name__)
+        print(f"Method: {run.__name__}. Instances: {len(filenames)}. "
+              f"Runs: {len(D_list)}.")
 
         # Executar para cada arquivo
         for f in filenames:
