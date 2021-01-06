@@ -109,18 +109,6 @@ class Solution(object):
         burned = [(x, self.iterations[x]) for x in self.burned]
         return defended, burned
 
-    def __eq__(self, other):
-        '''
-        Duas soluções são consideradas iguais se o tamanho da diferença
-        simétrica de suas vizinhanças e defendidos for 0.
-        '''
-        return isinstance(other, Solution) and \
-            len(self.neighborhood.symmetric_difference(other.neighborhood)) \
-            == 0
-
-    def __hash__(self):
-        return hash((tuple(sorted(tuple(self.neighborhood))), self.cost))
-
     def __repr__(self):
         defended, burned = self.full_solution()
         return (f"SOLUTION\n"
@@ -136,7 +124,7 @@ class Solution(object):
 
         n = G.number_of_nodes()
         iteration = [inf for _ in range(n)]
-        
+
         # Converter variáveis para conjuntos/listas
         for v in range(n):
             for t in range(T+1):

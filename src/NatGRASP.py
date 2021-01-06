@@ -127,7 +127,7 @@ class NatGRASP(object):
                 O pool de soluções selecionado.
         '''
 
-        S = sorted(list(S), key=lambda s: s.cost)
+        S = sorted(S, key=lambda s: s.cost)
 
         # Criar vetor q de quartis q1, q2, q3 e q4 de S
         # https://pt.wikipedia.org/wiki/Quartil
@@ -318,7 +318,7 @@ if __name__ == "__main__":
     method = NatGRASP(ffp, k, f, eps, limit, start_time)
 
     # PASSO 1: Construção
-    S = set()
+    S = dict()
 
     # Critério de parada 1: eta iterações
     for _ in range(eta):
@@ -328,7 +328,16 @@ if __name__ == "__main__":
             break
 
         curr = method.constructive_heuristic_th(alpha)
-        S.add(curr)
+        neigh_key = str(sorted(curr.neighborhood))
+
+        # Armazenar solução corrente se não tiver sido encontrada nenhuma
+        # solução com a mesma vizinhança ou se a encontrada tiver menor custo
+        if neigh_key not in S.keys() or (neigh_key in S.keys() and
+                                         curr.cost > S[neigh_key].cost):
+            S[neigh_key] = curr
+
+    # Converter S em lista de soluções
+    S = list(S.values())
 
     # PASSO 2: Seleção
     P, best = method.pool_selection(S, rho)
