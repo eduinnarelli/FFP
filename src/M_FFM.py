@@ -11,7 +11,7 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 31/12/2020
+Modificado em: 06/01/2021
 '''
 
 import gurobipy as gp
@@ -93,7 +93,7 @@ def m_ffm(G: nx.Graph, B: list, D: int, T: int, time: float):
     model.addConstrs((
         b[v, t] == 0
         for v in set(V).difference(set(B))
-        for t in range(1, min([nx.shortest_path_length(G, v, b) for b in B]))
+        for t in range(1, min(T+1, min([nx.shortest_path_length(G, v, b) for b in B])))
     ))
 
     # Colocando variáveis no modelo.
