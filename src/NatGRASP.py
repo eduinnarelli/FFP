@@ -332,8 +332,7 @@ if __name__ == "__main__":
 
         # Armazenar solução corrente se não tiver sido encontrada nenhuma
         # solução com a mesma vizinhança ou se a encontrada tiver menor custo
-        if neigh_key not in S.keys() or (neigh_key in S.keys() and
-                                         curr.cost > S[neigh_key].cost):
+        if neigh_key not in S.keys() or curr.cost > S[neigh_key].cost:
             S[neigh_key] = curr
 
     # Converter S em lista de soluções
