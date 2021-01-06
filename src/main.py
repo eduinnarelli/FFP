@@ -25,6 +25,32 @@ from FFP import FFP
 from NatGRASP import NatGRASP
 from f_desc import num_of_descendants
 
+def main():
+    # Ler argumentos da linha de comando
+    parser = ArgumentParser(add_help=True)
+    parser.add_argument('--input-file', required=True)
+    parser.add_argument('--instance-list', action='store_true')
+    parser.add_argument('--out-file', required=False)
+    parser.add_argument('--D', nargs='+', type=int, required=False)
+    args = parser.parse_args()
+    
+    if not exists(args.input_file):
+        print("File does not exist! Try again.")
+        exit(0)
+        
+    # Criar lista de instâncias
+    if args.instance_list:
+        filenames = generate_instance_list(args.input_file)
+    else:
+        filenames= [args.input_file]
+    
+    # Executar para CSV se nome do arquivo de saida for passado.
+    # Senão, executar com saída para stdout.    
+    if args.out_file:
+        run_to_csv(filenames, args.D, args.out_file)
+    else:
+        run_and_print(filenames, D_range)
+
 def generate_instance_list(filename):
     f = open(filename)
     l = f.read().splitlines()
@@ -139,28 +165,4 @@ def dicts_to_csv(dicts, csv_filename):
     csvfile.close()
 
 if __name__ == "__main__":
-
-    # Ler argumentos da linha de comando
-    parser = ArgumentParser(add_help=False)
-    parser.add_argument('--input-file', required=True)
-    parser.add_argument('--instance-list', action='store_true')
-    parser.add_argument('--out-file', required=False)
-    args = parser.parse_args()
-
-    if not exists(args.input_file):
-        print("File does not exist! Try again.")
-        exit(0)
-        
-    # Criar lista de instâncias
-    if args.instance_list:
-        filenames = generate_instance_list(args.input_file)
-    else:
-        filenames= [args.input_file]
-    
-    # Executar para CSV se nome do arquivo de saida for passado.
-    # Senão, executar com saída para stdout.
-    D_range = range(1, 11)
-    if args.out_file:
-        run_to_csv(filenames, D_range, args.out_file)
-    else:
-        run_and_print(filenames, D_range)
+    main()
