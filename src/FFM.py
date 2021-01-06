@@ -11,7 +11,7 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 04/01/2021
+Modificado em: 06/01/2021
 '''
 
 import gurobipy as gp
@@ -41,6 +41,7 @@ def ffm(G: nx.Graph, B: list, D: int, T: int, time: float):
 
     # Inicializar modelo
     model = gp.Model('ffm')
+    model.setParam('OutputFlag', 0)
     model.setParam('TimeLimit', time)
 
     # Variáveis binárias:

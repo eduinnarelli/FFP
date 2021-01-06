@@ -1,7 +1,7 @@
 '''
 Projeto Final: Mateurística para o Problema dos Brigadistas.
 
-main.py: Arquivo para execução dos testes da mateurística.
+main.py: Arquivo para execução dos testes.
 
 Disciplina:
     MC859/MO824 - Pesquisa Operacional.
@@ -15,29 +15,48 @@ Modificado em: 06/01/2021
 '''
 
 from argparse import ArgumentParser
-from os.path import exists, split, join
+from os.path import exists
 from random import seed
 from time import time
 from sys import exit
-import csv
 
 from FFP import FFP
-from NatGRASP import NatGRASP
+from Solution import Solution
 from f_desc import num_of_descendants
+from io_util import *
+
+from NatGRASP import NatGRASP
+from FFM import ffm
+from M_FFM import m_ffm
 
 def main():
+    methods = {'grasp':GRASP, 'ffm':FFM, 'mffm':M_FFM}
+    
     # Ler argumentos da linha de comando
     parser = ArgumentParser(add_help=True)
+    parser.add_argument('method')
     parser.add_argument('--input-file', required=True)
     parser.add_argument('--instance-list', action='store_true')
     parser.add_argument('--out-file', required=False)
-    parser.add_argument('--D', nargs='+', type=int, required=False)
+    parser.add_argument('--D', nargs='+', type=int, required=False, default=[2])
     args = parser.parse_args()
     
+    # Verificar arquivo de entrada
     if not exists(args.input_file):
         print("File does not exist! Try again.")
         exit(0)
-        
+    
+    # Lista de métodos
+    if args.method == 'all':
+        mets = methods.values()
+    elif args.method == 'ilp':
+        mets = [FFM, M_FFM]
+    elif args.method.lower() not in methods.keys():
+        print("Method does not exist! Available: 'grasp', 'ffm, 'mffm', 'ilp', 'all'")
+        exit(0)
+    else:
+        mets = [methods[args.method]]
+    
     # Criar lista de instâncias
     if args.instance_list:
         filenames = generate_instance_list(args.input_file)
@@ -47,59 +66,62 @@ def main():
     # Executar para CSV se nome do arquivo de saida for passado.
     # Senão, executar com saída para stdout.    
     if args.out_file:
-        run_to_csv(filenames, args.D, args.out_file)
+        run_to_csv(filenames, args.D, mets, args.out_file)
     else:
-        run_and_print(filenames, D_range)
+        run_and_print(filenames, D_range, mets)
 
-def generate_instance_list(filename):
-    f = open(filename)
-    l = f.read().splitlines()
-    f.close()
+def run_to_csv(filenames, D_range, methods, out_file):
     
-    l = list(filter(None, l))
-    
-    for i in range(len(l)):
-        split = l[i].split()
-        l[i] = join('instances', split[0], split[1])
-        
-    return l
-
-def run_to_csv(filenames, D_range, out_file):
-    # Instanciar problema
-    ffp = FFP(5)
-    seed_number = 1337
-    results = []
-    
-    # Executar para cada arquivo.
-    for f in filenames:
-        for D in D_range:
-            ffp.D = D
-            best, final_time = run(f, seed_number, ffp)
-
-            # Filtrar resultado
-            results.append(result_to_dict(f, ffp.G.number_of_nodes(),
-                                          best, D, final_time))
-    dicts_to_csv(results, out_file)
-
-def run_and_print(filenames, D_range):
     # Instanciar problema
     ffp = FFP(5)
     seed_number = 1337
     
-    # Executar para cada arquivo
-    for f in filenames:
-        for D in D_range:
-            ffp.D = D
-            best, final_time = run(f, seed_number, ffp)
+    # Executar cada método.
+    for run in methods:
+        results = []
+        prefix = run.__name__
+    
+        # Executar para cada arquivo.
+        for f in filenames:
+            
+            # Ler instância
+            ffp.read_input(f)
+            
+            for D in D_range:
+                ffp.D = D
+                best, final_time = run(ffp, seed_number)
 
-            # Imprimir resultado
-            print_result(f, ffp.G.number_of_nodes(),
-                         best, D, final_time)
+                # Filtrar resultado
+                results.append(result_to_dict(f, ffp.G.number_of_nodes(),
+                                              best, D, final_time))
+        dicts_to_csv(results, prefix, out_file)
 
-def run(filename, seed_number, ffp):
+def run_and_print(filenames, D_range, methods):
+    
+    # Instanciar problema
+    ffp = FFP(5)
+    seed_number = 1337
+    
+    # Executar cada método.
+    for run in methods:
+        print("Method:", run.__name__)
+        results = []
+    
+        # Executar para cada arquivo
+        for f in filenames:
+            
+            # Ler instância
+            ffp.read_input(f)
+            
+            for D in D_range:
+                ffp.D = D
+                best, final_time = run(ffp, seed_number)
 
-    # Ler instância
-    ffp.read_input(filename)
+                # Imprimir resultado
+                print_result(f, ffp.G.number_of_nodes(),
+                             best, D, final_time)
+
+def GRASP(ffp, seed_number):
 
     # Parâmetros
     k = 2
@@ -136,33 +158,19 @@ def run(filename, seed_number, ffp):
 
     return best, time()-start_time    
 
-def print_result(filename, n, best, D, final_time):
-    path, filename = split(filename)
-    directory = split(path)[1]
-
-    print(f"\"{directory}\",{n},{best.cost},"
-          f"\"{filename}\",{D},{final_time:.4f}")
-
-def result_to_dict(filename, n, best, D, final_time):
-    path, filename = split(filename)
-    directory = split(path)[1]
+def FFM(ffp, *_):
+    m = ffm(ffp.G, ffp.B, ffp.D, ffp.max_T, ffp.G.number_of_nodes() / 2)
+    m.optimize()
     
-    res = {'set':directory, 'n':n, 'result':best.cost, 
-           'instance':filename, 'D':D, 'runtime':round(final_time, 4)}
+    sol = Solution.vars_to_solution(m, ffp.G, ffp.max_T)
+    return sol, m.Runtime
     
-    return res
-
-def dicts_to_csv(dicts, csv_filename):
-    final_csv_name = join('results', 'project', csv_filename)
-    csvfile = open(final_csv_name, 'w', newline='')
-    fieldnames = ['set', 'n', 'result', 'instance', 'D', 'runtime']
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-    writer.writeheader()
+def M_FFM(ffp, *_):
+    m = m_ffm(ffp.G, ffp.B, ffp.D, ffp.max_T, ffp.G.number_of_nodes() / 2)
+    m.optimize()
     
-    for d in dicts:
-        writer.writerow(d)
-        
-    csvfile.close()
+    sol = Solution.vars_to_solution(m, ffp.G, ffp.max_T)
+    return sol, m.Runtime
 
 if __name__ == "__main__":
     main()
