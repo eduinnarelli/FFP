@@ -55,8 +55,8 @@ def main():
     elif args.method == 'ilp':
         mets = [FFM, M_FFM]
     elif args.method.lower() not in methods.keys():
-        print("Method does not exist! Available: 'grasp', 'ffm, 'mffm', 'ilp',"
-              "'all'")
+        print("Method does not exist! Available: 'grasp', 'ffm, 'mffm'," 
+              " 'ilp','all'")
         exit(0)
     else:
         mets = [methods[args.method]]
