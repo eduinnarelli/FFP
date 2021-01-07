@@ -16,6 +16,7 @@ Modificado em: 06/01/2021
 
 from argparse import ArgumentParser
 from os.path import exists
+from math import ceil
 from random import seed
 from time import time
 from sys import exit
@@ -77,8 +78,6 @@ def main():
 
 def run_to_csv(filenames, D_list, methods, out_file):
 
-    # Instanciar problema
-    ffp = FFP(5)
     seed_number = 1337
 
     # Executar cada método.
@@ -92,6 +91,7 @@ def run_to_csv(filenames, D_list, methods, out_file):
             inst += 1
 
             # Ler instância
+            ffp = FFP(5)
             ffp.read_input(f)
 
             d_index = 0
@@ -99,20 +99,19 @@ def run_to_csv(filenames, D_list, methods, out_file):
                 d_index += 1
                 print(f"Method {prefix}: {inst}/{len(filenames)}, "
                       f"{d_index}/{len(D_list)} runs", end='\r')
+                n = ffp.G.number_of_nodes()
                 ffp.D = D
+                ffp.max_T = ceil(n / D)
                 best, final_time = run(ffp, seed_number)
 
                 # Filtrar resultado
-                results.append(result_to_dict(f, ffp.G.number_of_nodes(),
-                                              best, D, final_time))
+                results.append(result_to_dict(f, n, best, D, final_time))
         dicts_to_csv(results, prefix, out_file)
         print()
 
 
 def run_and_print(filenames, D_list, methods):
 
-    # Instanciar problema
-    ffp = FFP(5)
     seed_number = 1337
 
     # Executar cada método.
@@ -124,15 +123,17 @@ def run_and_print(filenames, D_list, methods):
         for f in filenames:
 
             # Ler instância
+            ffp = FFP(5)
             ffp.read_input(f)
 
             for D in D_list:
+                n = ffp.G.number_of_nodes()
                 ffp.D = D
+                ffp.max_T = ceil(n / D)
                 best, final_time = run(ffp, seed_number)
 
                 # Imprimir resultado
-                print_result(f, ffp.G.number_of_nodes(),
-                             best, D, final_time)
+                print_result(f, n, best, D, final_time)
 
 
 def GRASP(ffp, seed_number):
