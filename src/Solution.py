@@ -76,28 +76,27 @@ class Solution(object):
 
         self.neighborhood = self.kn.union(self.defended)
 
-    def filter_neighborhood(self, k: int, sigma: float, G: Graph,
-                            f: FunctionType):
+    def filter_neighborhood(self, ffp, k: int, sigma: float, f: FunctionType):
         '''
         Função que filtra do conjunto de todas k-vizinhanças a fração sigma de
         melhores vizinhos de acordo com um critério guloso regido pela função
         f.
 
             Args:
+                ffp   (FFP): instância do problema sendo resolvida.
                 k     (int): profundidade da vizinhança.
                 sigma (float): fração dos melhores vizinhos a serem
                                retornados.
-                G     (Graph): o grafo de entrada.
                 f     (FunctionType): critério guloso para rankear vizinhos.
         '''
 
         # Construir k-vizinhanças, se preciso
         if self.kn is None:
-            self._construct_k_neighborhood(k, G)
+            self._construct_k_neighborhood(k, ffp.G)
 
         # Ordenar k-vizinhanças em ordem descrescente usando função f
         kn_sorted = sorted(list(self.kn),
-                           key=lambda v: f(self, G, v),
+                           key=lambda v: f(self, ffp, v),
                            reverse=True)
 
         # Retornar fração sigma dos melhores vizinhos unidos com defendidos

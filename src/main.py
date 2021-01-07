@@ -55,7 +55,7 @@ def main():
     elif args.method == 'ilp':
         mets = [FFM, M_FFM]
     elif args.method.lower() not in methods.keys():
-        print("Method does not exist! Available: 'grasp', 'ffm, 'mffm'," 
+        print("Method does not exist! Available: 'grasp', 'ffm, 'mffm',"
               " 'ilp','all'")
         exit(0)
     else:
@@ -85,16 +85,16 @@ def run_to_csv(filenames, D_list, methods, out_file):
     for run in methods:
         results = []
         prefix = run.__name__
-        inst=0
-    
+        inst = 0
+
         # Executar para cada arquivo.
         for f in filenames:
             inst += 1
-            
+
             # Ler instância
             ffp.read_input(f)
-            
-            d_index=0
+
+            d_index = 0
             for D in D_list:
                 d_index += 1
                 print(f"Method {prefix}: {inst}/{len(filenames)}, "
@@ -182,7 +182,8 @@ def FFM(ffp, *_):
 
 
 def M_FFM(ffp, *_):
-    m = m_ffm(ffp.G, ffp.B, ffp.D, ffp.max_T, ffp.G.number_of_nodes() / 2)
+    m = m_ffm(ffp.G, ffp.sp_len, ffp.B, ffp.D,
+              ffp.max_T, ffp.G.number_of_nodes() / 2)
     m.optimize()
 
     sol = Solution.vars_to_solution(m, ffp.G, ffp.max_T)

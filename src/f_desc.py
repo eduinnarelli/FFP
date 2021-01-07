@@ -15,11 +15,13 @@ Universidade Estadual de Campinas - UNICAMP - 2020
 Modificado em: 31/12/2020
 '''
 
-from networkx import Graph, shortest_path_length
+from networkx import Graph
 from Solution import Solution
 
+from FFP import FFP
 
-def is_descendant(G: Graph, B: set, u: int, v: int):
+
+def is_descendant(G: Graph, B: set, sp_len: dict, u: int, v: int):
     '''
     Função que checa se o vértice v é descendente de u no grafo não direcionado
     G. Aqui, v é descendente de u se existe um caminho entre eles e se d(v, B)
@@ -30,16 +32,17 @@ def is_descendant(G: Graph, B: set, u: int, v: int):
     '''
 
     # Checar se u está mais próximo de B do que v
-    d_uB = min([shortest_path_length(G, u, b) for b in B])
-    d_vB = min([shortest_path_length(G, v, b) for b in B])
+    d_uB = min([sp_len[u][b] for b in B])
+    d_vB = min([sp_len[v][b] for b in B])
     if d_uB < d_vB:
         return True
 
     return False
 
 
-def num_of_descendants(sol: Solution, G: Graph, u: int):
+def num_of_descendants(sol: Solution, ffp: FFP, u: int):
     '''
     Função que calcula e retorna o número de descendentes do vértice u.
     '''
-    return sum(is_descendant(G, sol.burned, u, v) for v in G.nodes)
+    return sum(is_descendant(ffp.G, sol.burned, ffp.sp_len, u, v)
+               for v in ffp.G.nodes)

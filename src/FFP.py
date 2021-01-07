@@ -14,7 +14,7 @@ Universidade Estadual de Campinas - UNICAMP - 2020
 Modificado em: 05/01/2021
 '''
 
-from networkx import Graph
+from networkx import Graph, all_pairs_shortest_path_length
 from math import ceil
 
 from M_FFM import m_ffm
@@ -54,18 +54,21 @@ class FFP(object):
         # Limite de iterações
         self.max_T = ceil(n / self.D)
 
+        # Calcular caminho mínimo entre todos os pares
+        self.sp_len = dict(all_pairs_shortest_path_length(self.G))
+
     def local_search(self, sol: Solution, k: int, sigma: float, f: str,
                      T: int, time_limit: float):
         if (time_limit <= 0):
             return sol
 
         # Construir grupo de variáveis fixadas.
-        neigh = sol.filter_neighborhood(k, sigma, self.G, f)
+        neigh = sol.filter_neighborhood(self, k, sigma, f)
         N = set(self.G.nodes).difference(neigh)
 
         # Fixar variáveis d_vt para v \in N e 0 <= t <= T
         T = min(self.max_T, T)
-        model = m_ffm(self.G, self.B, self.D, T, time_limit)
+        model = m_ffm(self.G, self.sp_len, self.B, self.D, T, time_limit)
         d = model._d
         model.addConstrs((
             d[v, t] == 0 for v in N for t in range(T+1)
@@ -76,7 +79,7 @@ class FFP(object):
         model.optimize()
         if model.SolCount > 0:
             sol = Solution.vars_to_solution(model, self.G, T)
-        
+
         return sol
 
     def __repr__(self):

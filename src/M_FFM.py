@@ -21,7 +21,7 @@ from argparse import ArgumentParser
 from gurobipy import GRB
 
 
-def m_ffm(G: nx.Graph, B: list, D: int, T: int, time: float):
+def m_ffm(G: nx.Graph, sp_len: dict, B: list, D: int, T: int, time: float):
     '''
     Modified Firefighter Model (M-FFM) - modelo de programação linear inteira
     que resolve o FFP de forma exata.
@@ -39,7 +39,6 @@ def m_ffm(G: nx.Graph, B: list, D: int, T: int, time: float):
 
     # Inicializar modelo
     model = gp.Model('m-ffm')
-    #model.setParam('OutputFlag', 0)
     model.setParam('TimeLimit', time)
 
     # Variáveis binárias:
@@ -93,7 +92,7 @@ def m_ffm(G: nx.Graph, B: list, D: int, T: int, time: float):
     model.addConstrs((
         b[v, t] == 0
         for v in set(V).difference(set(B))
-        for t in range(1, min(T+1, min([nx.shortest_path_length(G, v, b) for b in B])))
+        for t in range(1, min(T+1, min([sp_len[v][b] for b in B])))
     ))
 
     # Colocando variáveis no modelo.
