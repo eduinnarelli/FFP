@@ -15,6 +15,7 @@ Modificado em: 07/01/2021
 '''
 
 from networkx import Graph, all_pairs_shortest_path_length
+from math import ceil
 
 from M_FFM import m_ffm
 from Solution import Solution
