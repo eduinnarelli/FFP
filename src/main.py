@@ -171,8 +171,12 @@ def GRASP(ffp, seed_number):
 def FFM(ffp, *_):
     m = ffm(ffp.G, ffp.B, ffp.D, ffp.max_T, ffp.G.number_of_nodes() / 2)
     m.optimize()
-
-    sol = Solution.vars_to_solution(m, ffp.G, ffp.max_T)
+    
+    if m.SolCount < 0:
+        sol = Solution.vars_to_solution(m, ffp.G, ffp.max_T)
+    else:
+        sol = Solution(set(), set(), [], ffp.max_T)
+        
     return sol, m.Runtime
 
 
@@ -181,7 +185,11 @@ def M_FFM(ffp, *_):
             ffp.max_T, ffp.G.number_of_nodes() / 2)
     m.optimize()
 
-    sol = Solution.vars_to_solution(m, ffp.G, ffp.max_T)
+    if m.SolCount > 0:
+        sol = Solution.vars_to_solution(m, ffp.G, ffp.max_T)
+    else:
+        sol = Solution(set(), set(), [], ffp.max_T)
+        
     return sol, m.Runtime
 
 
