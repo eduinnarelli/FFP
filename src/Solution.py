@@ -55,7 +55,7 @@ class Solution(object):
                 # destinos)
                 v_n for v_n in list(single_source_shortest_path(G, d, k)
                                     .keys())
-                # Ignorar vértices queimados ou defendidos
+                # Ignorar vértices defendidos
                 if v_n not in self.defended
             )
 
@@ -101,7 +101,7 @@ class Solution(object):
 
         # Retornar fração sigma dos melhores vizinhos unidos com defendidos
         return set(kn_sorted[:ceil(sigma * len(kn_sorted))])\
-               .union(self.defended)
+            .union(self.defended)
 
     def full_solution(self):
         defended = [(x, self.iterations[x]) for x in self.defended]
