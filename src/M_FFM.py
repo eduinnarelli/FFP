@@ -11,7 +11,7 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 06/01/2021
+Modificado em: 07/01/2021
 '''
 
 import gurobipy as gp

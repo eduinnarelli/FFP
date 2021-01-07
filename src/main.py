@@ -11,12 +11,11 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 06/01/2021
+Modificado em: 07/01/2021
 '''
 
 from argparse import ArgumentParser
 from os.path import exists
-from math import ceil
 from random import seed
 from time import time
 from sys import exit
@@ -78,62 +77,57 @@ def main():
 
 def run_to_csv(filenames, D_list, methods, out_file):
 
+    # Instanciar problema
     seed_number = 1337
 
     # Executar cada método.
     for run in methods:
+        ffp = FFP(5)
         results = []
         prefix = run.__name__
         inst = 0
-
+    
         # Executar para cada arquivo.
         for f in filenames:
             inst += 1
-
-            # Ler instância
-            ffp = FFP(5)
-            ffp.read_input(f)
-
             d_index = 0
             for D in D_list:
                 d_index += 1
                 print(f"Method {prefix}: {inst}/{len(filenames)}, "
                       f"{d_index}/{len(D_list)} runs", end='\r')
-                n = ffp.G.number_of_nodes()
                 ffp.D = D
-                ffp.max_T = ceil(n / D)
+                ffp.read_input(f)
                 best, final_time = run(ffp, seed_number)
 
                 # Filtrar resultado
-                results.append(result_to_dict(f, n, best, D, final_time))
+                results.append(result_to_dict(f, ffp.G.number_of_nodes(),
+                                              best, D, final_time))
         dicts_to_csv(results, prefix, out_file)
         print()
 
 
 def run_and_print(filenames, D_list, methods):
 
+    # Instanciar problema
     seed_number = 1337
 
     # Executar cada método.
     for run in methods:
+        ffp = FFP(5)
         print(f"Method: {run.__name__}. Instances: {len(filenames)}. "
               f"Runs: {len(D_list)}.")
 
         # Executar para cada arquivo
         for f in filenames:
-
-            # Ler instância
-            ffp = FFP(5)
-            ffp.read_input(f)
-
             for D in D_list:
-                n = ffp.G.number_of_nodes()
                 ffp.D = D
-                ffp.max_T = ceil(n / D)
+                ffp.read_input(f)
+                
                 best, final_time = run(ffp, seed_number)
 
                 # Imprimir resultado
-                print_result(f, n, best, D, final_time)
+                print_result(f, ffp.G.number_of_nodes(),
+                             best, D, final_time)
 
 
 def GRASP(ffp, seed_number):
@@ -184,7 +178,7 @@ def FFM(ffp, *_):
 
 def M_FFM(ffp, *_):
     m = m_ffm(ffp.G, ffp.sp_len, ffp.B, ffp.D,
-              ffp.max_T, ffp.G.number_of_nodes() / 2)
+            ffp.max_T, ffp.G.number_of_nodes() / 2)
     m.optimize()
 
     sol = Solution.vars_to_solution(m, ffp.G, ffp.max_T)

@@ -11,7 +11,7 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 05/01/2021
+Modificado em: 07/01/2021
 '''
 
 from networkx import Graph, all_pairs_shortest_path_length
@@ -21,20 +21,20 @@ from Solution import Solution
 
 
 class FFP(object):
-    def __init__(self, D: int, B: list = [], T: int = 0):
+    def __init__(self, D: int, G: Graph = Graph(), B: list = [], T: int = 0):
         # Parâmetro obrigatório
         self.D = D
 
-        # Parâmetros opcionais
+        # Parâmetros opcionais.
+        self.G = G
         self.B = B
         self.max_T = T
 
-        # Inicializar grafo
-        self.G = Graph()
-
     def read_input(self, filename: str):
         ''' Função para carregar uma instância.'''
-
+        
+        self.B = []
+        self.G = Graph()
         with open(filename, 'r') as f:
 
             # Iterar sobre as linhas do arquivo
@@ -48,6 +48,12 @@ class FFP(object):
                 # Adicionar arestas
                 elif len(values) == 2:
                     self.G.add_edge(int(values[0]), int(values[1]))
+
+        # Número de vértices e arestas
+        n = self.G.number_of_nodes()
+
+        # Limite de iterações
+        self.max_T = ceil(n / self.D)
 
         # Calcular caminho mínimo entre todos os pares
         self.sp_len = dict(all_pairs_shortest_path_length(self.G))
