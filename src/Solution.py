@@ -11,7 +11,7 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 05/01/2021
+Modificado em: 07/01/2021
 '''
 
 from networkx import Graph, single_source_shortest_path
@@ -101,7 +101,7 @@ class Solution(object):
 
         # Retornar fração sigma dos melhores vizinhos unidos com defendidos
         return set(kn_sorted[:ceil(sigma * len(kn_sorted))])\
-            .union(self.defended)
+               .union(self.defended)
 
     def full_solution(self):
         defended = [(x, self.iterations[x]) for x in self.defended]
