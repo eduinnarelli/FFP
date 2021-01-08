@@ -20,7 +20,7 @@ import numpy
 import pandas
 import seaborn as sn
 from sys import argv, exit
-from os.path import exists, join, splitext
+from os.path import exists, splitext
 
 logplot = False
 
