@@ -86,7 +86,7 @@ def run_to_csv(filenames, D_list, methods, out_file):
         results = []
         prefix = run.__name__
         inst = 0
-    
+
         # Executar para cada arquivo.
         for f in filenames:
             inst += 1
@@ -122,7 +122,7 @@ def run_and_print(filenames, D_list, methods):
             for D in D_list:
                 ffp.D = D
                 ffp.read_input(f)
-                
+
                 best, final_time = run(ffp, seed_number)
 
                 # Imprimir resultado
@@ -171,25 +171,25 @@ def GRASP(ffp, seed_number):
 def FFM(ffp, *_):
     m = ffm(ffp.G, ffp.B, ffp.D, ffp.max_T, ffp.G.number_of_nodes() / 2)
     m.optimize()
-    
-    if m.SolCount < 0:
+
+    if m.SolCount > 0:
         sol = Solution.vars_to_solution(m, ffp.G, ffp.max_T)
     else:
         sol = Solution(set(), set(), [], ffp.max_T)
-        
+
     return sol, m.Runtime
 
 
 def M_FFM(ffp, *_):
     m = m_ffm(ffp.G, ffp.sp_len, ffp.B, ffp.D,
-            ffp.max_T, ffp.G.number_of_nodes() / 2)
+              ffp.max_T, ffp.G.number_of_nodes() / 2)
     m.optimize()
 
     if m.SolCount > 0:
         sol = Solution.vars_to_solution(m, ffp.G, ffp.max_T)
     else:
         sol = Solution(set(), set(), [], ffp.max_T)
-        
+
     return sol, m.Runtime
 
 
