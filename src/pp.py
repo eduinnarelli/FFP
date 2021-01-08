@@ -22,7 +22,7 @@ import seaborn as sn
 from sys import argv, exit
 from os.path import exists, splitext
 
-logplot = False
+logplot = True
 
 # Entrada
 if len(argv) < 2:
@@ -74,7 +74,7 @@ plt.plot(r[:, 1], n, color = '#FFD700', linewidth = 1, label = 'FFM')
 plt.plot(r[:, 2], n, color = '#4B0082', linewidth = 1, label = 'M-FFM')
 plt.plot(r[:, 3], n, color = '#FF6347', linewidth = 1, label = 'REF')
 plt.ylabel('Probabilidade (%)')
-plt.xlabel('r')
+plt.xlabel('$log_2(r)$')
 sn.despine(left = True, bottom = True)
 plt.grid(True, axis = 'x')
 plt.grid(True, axis = 'y')
