@@ -1,0 +1,5 @@
+# Normalização de fim de linha
+* text=auto
+
+# Exclui as instancias do GitHub Linguist
+instances/* linguist-documentation
