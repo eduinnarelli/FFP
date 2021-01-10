@@ -2,4 +2,6 @@
 * text=auto
 
 # Exclui as instancias do GitHub Linguist
-instances/* linguist-documentation
+instances/BBGRL/* linguist-documentation
+instances/GBRL/* linguist-documentation
+instances/GEN/* linguist-documentation
