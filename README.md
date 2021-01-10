@@ -23,7 +23,7 @@ python3 src/main.py [-h] --input-file INPUT_FILE [--out-file OUT_FILE] [--D D [D
                     [--instance-list | --visualizer]
                     method
 ```
-Onde `INPUT_FILE` é a instância (instâncias disponíveis em `instances/tipo_de_inst/nome_da_inst`,  
+Onde `INPUT_FILE` é a instância (instâncias disponíveis em `instances/tipo_de_inst/nome_da_inst`),  
 e `method` é o método que deve ser avaliado (opções: `all`, `ilp`, `ffm`, `mffm`, `grasp`).
 
 Parâmetros opcionais incluem `D`: o número de bombeiros que devem ser considerados para a instância
