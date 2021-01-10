@@ -11,7 +11,7 @@ Autores:
 
 Universidade Estadual de Campinas - UNICAMP - 2020
 
-Modificado em: 07/01/2021
+Modificado em: 09/01/2021
 '''
 
 from argparse import ArgumentParser
@@ -24,7 +24,7 @@ from FFP import FFP
 from Solution import Solution
 from f_desc import num_of_descendants
 from io_util import (generate_instance_list, print_result, dicts_to_csv,
-                     result_to_dict)
+                     result_to_dict, result_to_visualizer)
 
 from NatGRASP import NatGRASP
 from FFM import ffm
@@ -38,10 +38,14 @@ def main():
     parser = ArgumentParser(add_help=True)
     parser.add_argument('method')
     parser.add_argument('--input-file', required=True)
-    parser.add_argument('--instance-list', action='store_true')
     parser.add_argument('--out-file', required=False)
     parser.add_argument('--D', nargs='+', type=int,
                         required=False, default=[2])
+                        
+    exclusive = parser.add_mutually_exclusive_group(required=False)
+    exclusive.add_argument('--instance-list', action='store_true')
+    exclusive.add_argument('--visualizer', action='store_true')
+    
     args = parser.parse_args()
 
     # Verificar arquivo de entrada
@@ -69,13 +73,16 @@ def main():
 
     # Executar para CSV se nome do arquivo de saida for passado.
     # Senão, executar com saída para stdout.
-    if args.out_file:
+    if args.visualizer:
+        run_to_visualizer(filenames, args.D, mets)
+    elif args.out_file:
         run_to_csv(filenames, args.D, mets, args.out_file)
     else:
         run_and_print(filenames, args.D, mets)
 
 
-def run_to_csv(filenames, D_list, methods, out_file):
+def run_to_csv(filenames : list, D_list : list, methods : list, 
+               out_file : str):
 
     # Instanciar problema
     seed_number = 1337
@@ -106,7 +113,7 @@ def run_to_csv(filenames, D_list, methods, out_file):
         print()
 
 
-def run_and_print(filenames, D_list, methods):
+def run_and_print(filenames : list, D_list : list, methods : list):
 
     # Instanciar problema
     seed_number = 1337
@@ -129,8 +136,21 @@ def run_and_print(filenames, D_list, methods):
                 print_result(f, ffp.G.number_of_nodes(),
                              best, D, final_time)
 
+def run_to_visualizer(filenames : list, D : list, method : list):
+    
+    # Instanciar problema
+    seed_number = 1337
 
-def GRASP(ffp, seed_number):
+    # Executar.
+    ffp = FFP(D[0])
+    ffp.read_input(filenames[0])
+
+    best, _ = method[0](ffp, seed_number)
+
+    # Imprimir resultado
+    result_to_visualizer(filenames[0], ffp, best)
+
+def GRASP(ffp : FFP, seed_number : int):
 
     # Parâmetros
     k = 2
@@ -168,7 +188,7 @@ def GRASP(ffp, seed_number):
     return best, time()-start_time
 
 
-def FFM(ffp, *_):
+def FFM(ffp : FFP, *_):
     m = ffm(ffp.G, ffp.B, ffp.D, ffp.max_T, ffp.G.number_of_nodes() / 2)
     m.optimize()
 
@@ -180,7 +200,7 @@ def FFM(ffp, *_):
     return sol, m.Runtime
 
 
-def M_FFM(ffp, *_):
+def M_FFM(ffp : FFP, *_):
     m = m_ffm(ffp.G, ffp.sp_len, ffp.B, ffp.D,
               ffp.max_T, ffp.G.number_of_nodes() / 2)
     m.optimize()
