@@ -1,0 +1,281 @@
+@article{natanael,
+author = {Ramos, Natanael and de Souza, Cid Carvalho and de Rezende, Pedro Jussieu},
+title = {A matheuristic for the firefighter problem on graphs},
+journal = {International Transactions in Operational Research},
+volume = {27},
+number = {2},
+pages = {739-766},
+keywords = {combinatorial optimization, heuristics, firefighter problem, integer linear programming},
+doi = {10.1111/itor.12638},
+url = {https://onlinelibrary.wiley.com/doi/abs/10.1111/itor.12638},
+eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1111/itor.12638},
+abstract = {Abstract In this paper, we describe a computational study conducted on The Firefighter Problem (FFP), which models fire spreading and containment in a graph. Once the fire breaks out on a set of vertices, the goal is to save as many vertices as possible with limited resources. Practical applications of the FFP occur in areas such as disease control and network security. The FFP is NP-hard and heuristics have been proposed earlier. Our main contributions include improvements to an existing integer linear programming formulation that led to an average speedup of two to compute exact solutions. Moreover, we developed a novel matheuristic, a technique based on the interoperation between metaheuristics and mathematical programming. We performed extensive experiments on public benchmarks both for parameter tuning and for comparison of our results with those from the literature. A rigorous statistical analysis shows that our new matheuristic outperforms the existing approaches.},
+year = {2020}
+}
+
+@unpublished{original,
+author = {Bert L. Hartnell},
+title = {Firefighter! An Application of Domination},
+note = {Presentation, 25th Manitoba Conference on Combinatorial Mathematics and Computing, University of Manitoba in Winnipeg, Canada},
+year = {1995}
+}
+
+@article{structural,
+  author    = {Janka Chleb{\'{\i}}kov{\'{a}} and
+               Morgan Chopin},
+  title     = {The Firefighter Problem: {A} Structural Analysis},
+  journal   = {CoRR},
+  volume    = {abs/1310.2322},
+  year      = {2013},
+  url       = {http://arxiv.org/abs/1310.2322},
+  archivePrefix = {arXiv},
+  eprint    = {1310.2322},
+  timestamp = {Mon, 13 Aug 2018 16:48:58 +0200},
+  biburl    = {https://dblp.org/rec/journals/corr/ChlebikovaC13.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{ilp,
+title = "Fire containment in grids of dimension three and higher",
+journal = "Discrete Applied Mathematics",
+volume = "155",
+number = "17",
+pages = "2257 - 2268",
+year = "2007",
+issn = "0166-218X",
+doi = "https://doi.org/10.1016/j.dam.2007.06.002",
+url = "http://www.sciencedirect.com/science/article/pii/S0166218X07002053",
+author = "Mike Develin and Stephen G. Hartke",
+keywords = "Firefighter, Containment strategy, Vaccination strategy",
+abstract = "We consider a deterministic discrete-time model of fire spread introduced by Hartnell [Firefighter! an application of domination, Presentation, in: 20th Conference on Numerical Mathematics and Computing, University of Manitoba in Winnipeg, Canada, September 1995] and the problem of minimizing the number of burnt vertices when a fixed number of vertices can be defended by firefighters per time step. While only two firefighters per time step are needed in the two-dimensional lattice to contain any outbreak, we prove a conjecture of Wang and Moeller [Fire control on graphs, J. Combin. Math. Combin. Comput. 41 (2002) 19–34] that 2d-1 firefighters per time step are needed to contain a fire outbreak starting at a single vertex in the d-dimensional square lattice for d⩾3; we also prove that in the d-dimensional lattice, d⩾3, for each positive integer f there is some outbreak of fire such that f firefighters per time step are insufficient to contain the outbreak. We prove another conjecture of Wang and Moeller that the proportion of elements in the three-dimensional grid Pn×Pn×Pn which can be saved with one firefighter per time step when an outbreak starts at one vertex goes to 0 as n gets large. Finally, we use integer programming to prove results about the minimum number of time steps needed and minimum number of burnt vertices when containing a fire outbreak in the two-dimensional square lattice with two firefighters per time step."
+}
+
+@article{survey,
+author = {Finbow, Stephen and Macgillivray, Gary},
+year = {2009},
+month = {02},
+pages = {57-78},
+title = {The Firefighter Problem: A survey of results, directions and questions},
+volume = {43},
+journal = {The Australasian Journal of Combinatorics [electronic only]}
+}
+
+@article{FINBOW20072094,
+title = "The firefighter problem for graphs of maximum degree three",
+journal = "Discrete Mathematics",
+volume = "307",
+number = "16",
+pages = "2094 - 2105",
+year = "2007",
+note = "EuroComb '03 - Graphs and Algorithms",
+issn = "0012-365X",
+doi = "https://doi.org/10.1016/j.disc.2005.12.053",
+url = "http://www.sciencedirect.com/science/article/pii/S0012365X0600776X",
+author = "Stephen Finbow and Andrew King and Gary MacGillivray and Romeo Rizzi",
+keywords = "Firefigher problem, NP-complete problem, Optimization on graphs",
+abstract = "We show that the firefighter problem is NP-complete for trees of maximum degree three, but in P for graphs of maximum degree three if the fire breaks out at a vertex of degree at most two."
+}
+
+@inproceedings{aprox1,
+author = {Hartnell, Bert and Li, Qiyan},
+year = {2000},
+month = {01},
+pages = {187-192},
+title = {Firefighting on trees: How bad is the greedy algorithm?},
+volume = {145},
+booktitle = {Proceedings of the Thirty-first Southeastern International Conference on Combinatorics, Graph Theory and Computing},
+venue = {Boca Raton, FL}
+}
+
+@InProceedings{aprox2,
+author="Cai, Leizhen
+and Verbin, Elad
+and Yang, Lin",
+editor="Hong, Seok-Hee
+and Nagamochi, Hiroshi
+and Fukunaga, Takuro",
+title="Firefighting on Trees: (1{\thinspace}-{\thinspace}1/e)--Approximation, Fixed Parameter Tractability and a Subexponential Algorithm",
+booktitle="Algorithms and Computation",
+year="2008",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="258--269",
+abstract="The firefighter problem is defined as follows. Initially, a fire breaks out at a vertex r of a graph G. In each subsequent time unit, a firefighter chooses a vertex not yet on fire and protects it, and the fire spreads to all unprotected neighbors of the vertices on fire. The objective is to choose a sequence of vertices for the firefighter to protect so as to save the maximum number of vertices. The firefighter problem can be used to model the spread of fire, diseases, computer viruses and suchlike in a macro-control level.",
+isbn="978-3-540-92182-0"
+}
+
+@article{iwaikawa,
+title={Improved Approximation Algorithms for Firefighter Problem on Trees},
+author={Yutaka Iwaikawa and Naoyuki Kamiyama and Tomomi Matsui},
+journal={IEICE Transactions on Information and Systems},
+volume={E94.D},
+number={2},
+pages={196-199},
+year={2011},
+doi={10.1587/transinf.E94.D.196}
+}
+
+@InProceedings{blum,
+author="Blum, Christian
+and Blesa, Maria J.
+and Garc{\'i}a-Mart{\'i}nez, Carlos
+and Rodr{\'i}guez, Francisco J.
+and Lozano, Manuel",
+editor="Blum, Christian
+and Ochoa, Gabriela",
+title="The Firefighter Problem: Application of Hybrid Ant Colony Optimization Algorithms",
+booktitle="Evolutionary Computation in Combinatorial Optimisation",
+year="2014",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="218--229",
+abstract="The firefigther problem is a deterministic discrete-time model for the spread (and the containment) of fire on an undirected graph. Assuming that the fire breaks out at a predefined set of vertices, the goal is to save as many vertices as possible from burning. The same model has also been used in the literature for the simulation of the spreading of deseases. In this work we present, to our knowledge, the first metaheuristics for tackling this problem. In particular, a pure ant colony optimization approach and a hybrid variant of this algorithm are proposed. The results show that the hybrid ant colony optimization variant is superior to the pure ant colony optimization version and to a mathematical programming solver, especially when the graph size and density grows.",
+isbn="978-3-662-44320-0"
+}
+
+@article{garcia,
+title = "The firefighter problem: Empirical results on random graphs",
+journal = "Computers \& Operations Research",
+volume = "60",
+pages = "55 - 66",
+year = "2015",
+issn = "0305-0548",
+doi = "https://doi.org/10.1016/j.cor.2015.02.004",
+url = "http://www.sciencedirect.com/science/article/pii/S0305054815000271",
+author = "C. García-Martínez and C. Blum and F.J. Rodriguez and M. Lozano",
+keywords = "Firefighter problem, Integer linear programming techniques, Heuristics",
+abstract = "The firefighter problem is a deterministic discrete-time model for the spread and containment of fire on a graph. Once the fire breaks out at a set of vertices, the goal addressed in this work is to save as many vertices as possible from burning. Although the problem finds applications in various real-world problems, such as the spread of diseases or hoaxes contention in communication networks, this problem has not been addressed from a practical point of view so far, in the sense of finding a good strategy for the general case. In this work, we develop and compare several integer linear programming techniques and heuristic methods. Random graphs are used for the purpose of comparison. The obtained results shed some light on the challenges for computational tools as caused by graph topology, graph size, and the number of firefighters per iteration, when looking for the best strategy for an a priori unknown graph."
+}
+
+
+@InProceedings{hu,
+author="Hu, Bin
+and Windbichler, Andreas
+and Raidl, G{\"u}nther R.",
+editor="Ochoa, Gabriela
+and Chicano, Francisco",
+title="A New Solution Representation for the Firefighter Problem",
+booktitle="Evolutionary Computation in Combinatorial Optimization",
+year="2015",
+publisher="Springer International Publishing",
+address="Cham",
+pages="25--35",
+abstract="The firefighter problem (FFP) is used as a model to simulate how a fire breaks out and spreads to its surroundings over a discrete time period. The goal is to deploy a given number of firefighters on strategic points at each time step to contain the fire in a most efficient way, so that as many areas are saved from the fire as possible. In this paper we introduce a new solution representation for the FFP which can be applied in metaheuristic approaches. Compared to the existing approach in the literature, it is more compact in a sense that the solution space is smaller although the complexity for evaluating a solution remains unchanged. We use this representation in conjunction with a variable neighborhood search (VNS) approach to tackle the FFP. To speed up the optimization process, we propose an incremental evaluation technique that omits unnecessary re-calculations. Computational tests were performed on a benchmark instance set containing 120 random graphs of different size and density. Results indicate that our VNS approach is highly competitive with existing state-of-the-art approaches.",
+isbn="978-3-319-16468-7"
+}
+
+
+@InProceedings{matheuristic,
+author="Boschetti, Marco A.
+and Maniezzo, Vittorio
+and Roffilli, Matteo
+and Boluf{\'e} R{\"o}hler, Antonio",
+editor="Blesa, Mar{\'i}a J.
+and Blum, Christian
+and Di Gaspero, Luca
+and Roli, Andrea
+and Sampels, Michael
+and Schaerf, Andrea",
+title="Matheuristics: Optimization, Simulation and Control",
+booktitle="Hybrid Metaheuristics",
+year="2009",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="171--177",
+abstract="Matheuristics are heuristic algorithms made by the interoperation of metaheuristics and mathematic programming (MP) techniques. An essential feature is the exploitation in some part of the algorithms of features derived from the mathematical model of the problems of interest, thus the definition ``model-based metaheuristics'' appearing in the title of some events of the conference series dedicated to matheuristics [1]. The topic has attracted the interest of a community of researchers, and this led to the publication of dedicated volumes and journal special issues, [13], [14], besides to dedicated tracks and sessions on wider scope conferences.",
+isbn="978-3-642-04918-7"
+}
+
+@article{grasp,
+  title={Greedy randomized adaptive search procedures},
+  author={Feo, Thomas A and Resende, Mauricio GC},
+  journal={Journal of global optimization},
+  volume={6},
+  number={2},
+  pages={109--133},
+  year={1995},
+  publisher={Springer}
+}
+
+@Misc{ffp-instances-page,
+ author = {Natanael Ramos and Cid C. de Souza and Pedro J. de Rezende},
+ title = {The Firefighter Problem on Graphs - Benchmark Instances},
+ year = {2018},
+ note = {Available at \url{www.ic.unicamp.br/~cid/Problem-instances/Firefighter-in-Graphs/}}
+}
+
+@article{gilbert,
+ ISSN = {00034851},
+ URL = {http://www.jstor.org/stable/2237458},
+ author = {E. N. Gilbert},
+ journal = {The Annals of Mathematical Statistics},
+ number = {4},
+ pages = {1141--1144},
+ publisher = {Institute of Mathematical Statistics},
+ title = {Random Graphs},
+ volume = {30},
+ year = {1959}
+}
+
+@article{erdos,
+ ISSN = {00034851},
+ URL = {https://www.renyi.hu/~p_erdos/1959-11.pdf},
+ author = {P. Erdös and A. Rényi},
+ journal = {Publicationes Mathematicae (Debrecen)},
+ number = {6},
+ pages = {290-297},
+ title = {Random Graphs},
+ volume = {30},
+ year = {1959}
+}
+
+@article {barabasi,
+	author = {Barab{\'a}si, Albert-L{\'a}szl{\'o} and Albert, R{\'e}ka},
+	title = {Emergence of Scaling in Random Networks},
+	volume = {286},
+	number = {5439},
+	pages = {509--512},
+	year = {1999},
+	doi = {10.1126/science.286.5439.509},
+	publisher = {American Association for the Advancement of Science},
+	abstract = {Systems as diverse as genetic networks or the World Wide Web are best described as networks with complex topology. A common property of many large networks is that the vertex connectivities follow a scale-free power-law distribution. This feature was found to be a consequence of two generic mechanisms: (i) networks expand continuously by the addition of new vertices, and (ii) new vertices attach preferentially to sites that are already well connected. A model based on these two ingredients reproduces the observed stationary scale-free distributions, which indicates that the development of large networks is governed by robust self-organizing phenomena that go beyond the particulars of the individual systems.},
+	issn = {0036-8075},
+	URL = {https://science.sciencemag.org/content/286/5439/509},
+	eprint = {https://science.sciencemag.org/content/286/5439/509.full.pdf},
+	journal = {Science}
+}
+
+@mastersthesis{nat_dissertation,
+    author = {Natanael Ramos},
+    title = {A computational study of the Firefighter Problem on graphs},
+    year = {2018},
+    school = {Institute of Computing (IC) - UNICAMP},
+    note = {Available at \url{http://repositorio.unicamp.br/handle/REPOSIP/331841}}
+}
+
+@InProceedings{networkx,
+  author =       {Aric A. Hagberg and Daniel A. Schult and Pieter J. Swart},
+  title =        {Exploring Network Structure, Dynamics, and Function using NetworkX},
+  booktitle =   {Proceedings of the 7th Python in Science Conference},
+  pages =     {11 - 15},
+  address = {Pasadena, CA USA},
+  year =      {2008},
+  editor =    {Ga\"el Varoquaux and Travis Vaught and Jarrod Millman},
+}
+
+@misc{gurobi,
+    author = {{Gurobi Optimization, LLC}},
+    title = "Gurobi Optimizer Reference Manual",
+    year = 2020,
+    url = "http://www.gurobi.com"
+}
+
+@article{pp,
+    author  = {Dolan, E. D. and Moré, J. J.},
+    title   = {Benchmarking optimization software with performance profiles},
+    journal = {Mathematical Programming},
+    volume  = {91},
+    number  = {2},
+    pages   = {201--213},
+    year    = {2002}
+}
