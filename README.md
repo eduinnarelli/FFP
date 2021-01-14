@@ -7,6 +7,8 @@ Implementação de uma mateurística para o Problema dos Brigadistas, baseada no
 [Ramos, et al](https://onlinelibrary.wiley.com/doi/full/10.1111/itor.12638).
 Inclui também a implementação de dois modelos lineares inteiros para o problema.
 
+Relatório completo, com uma introdução ao problema, descrição detalhada da mateurística implementada, detalhes de execução, e resultados pode ser visto em `report.pdf`.
+
 **Dependências:**
 
 Antes de executar, é preciso estar em um ambiente Python com os pacotes do `requirements.txt` e o 
